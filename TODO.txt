@@ -1,9 +1,6 @@
 TODO:
 
-1) Essayer de supprimer les vecteurs X et Y de la structure tringulation si on sait faire tout sans 
 2) Voir comment s'initialisent les edges ? Au fur et à mesure i guess, dès qu'on touche à un triangle
 
 NOW: 
-initialiser les edges de D0
-
 

@@ -22,12 +22,21 @@ double y;
 } Point; 
 
 typedef struct {
-int nodes[3];// les indices des 3 nodes du triangle
+Point *sommet0;
+Point *sommet1;
+Point *sommet2;
+//int nodes[3];// les indices des 3 nodes du triangle
+int indice; 
 } Triangle; 
 
 typedef struct {
-    int elem[2];// ce sont les indices du tableau de triangle elem de la structure Triangulation
-    int node[2];
+Triangle *elem0;
+Triangle *elem1;
+    //int elem[2];// ce sont les indices du tableau de triangle elem de la structure Triangulation
+    //int node[2];
+Point *P0;
+Point *P1;
+int indice; 
 } Edge;
 
 typedef struct {

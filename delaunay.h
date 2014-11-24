@@ -31,13 +31,28 @@ typedef struct {
 } Edge;
 
 typedef struct {
-    //int *elem; // on tente sans ca et avec un tableau de triangles a la place
-    Triangle* elem;
-    Edge*     edges;
-    Point *points;// from data
-    int nElem;// on met à jour quand on ajoute un triangule comme ça à la fin on sait dire combien de triangles on a construit
-    int nNode;// from data
+  
+  Triangle* theTriangle;
+  myLeaf* theChildren;
+
+} myLeaf;
+
+typedef struct {
+  myLeaf theRoot;
+} myTree;
+
+typedef struct {
+  //int *elem; // on tente sans ca et avec un tableau de triangles a la place
+  Triangle* elem;
+  Edge*     edges;
+  Point *points;// from data
+  int nElem;// on met à jour quand on ajoute un triangule comme ça à la fin on sait dire combien de triangles on a construit
+  int nNode;// from data
+  myTree* theTree;
 } Triangulation;
+
+
+
 
 /*
 typedef struct {
@@ -61,7 +76,7 @@ void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation);
 int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
-void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation);
+void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
 int                *ComputeRandom(int n);
 
 /*

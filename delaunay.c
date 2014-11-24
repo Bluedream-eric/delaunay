@@ -23,8 +23,8 @@ int *random = ComputeRandom(theTriangulation->nNode-1);
 int i=0;
 for(i=0; i<theTriangulation->nNode; i++)
 {
-	//AddPoint(theTriangulation->points[random[i]], theTriangulation);
-	AddPoint(&(theTriangulation->points[random[i]]), theTriangulation);
+     //AddPoint(theTriangulation->points[random[i]], theTriangulation);
+    AddPoint(&(theTriangulation->points[random[i]]), theTriangulation);
 }
 
 
@@ -40,7 +40,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)
 	Triangle *trig =NULL;
 	Edge *edge=NULL;
 	
-	PointLocate(edge, trig, point,theTriangulation); 
+	PointLocate(edge, trig, point,theTriangulation,theTriangulation->theTree->theRoot); 
 
 						            
 	// Il faut faire quelques LegalizeEdge :-) TODO
@@ -68,7 +68,7 @@ return tab;
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation)
+void PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation,myLeaf *leaves)
 {
 /* PointLocate: 
 On fourni en argument deux pointeurs *edge et *trig. Il faut voir où se trouve *point et mettre à jour les pointeurs
@@ -78,8 +78,15 @@ puisque le point n'est pas à la fois sur une edge et dans un triangle).
 
 //Par défaut la fonction choisi que le point à chercher est dans le premier triangle (le grand triangle 0)
 //et pas sur une edge. Il faudra modifier cela avec toute le systeme de recherche d'un point dans les arbres etc :-)
+
+  int i = 0;
   
-trig = &(theTriangulation->elem[0]);// par defaut, le premier triangle initialisé 
+  while (leaves->theChildren[i] != NULL)
+    {
+      // TODO
+    }
+
+trig = leaves->theTriangle;// par defaut, le premier triangle initialisé 
 edge = NULL;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +157,12 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->edges[2].node[0]= 0; 
     theTriangulation->edges[2].node[1]= 0; 
     
-    fclose(file);    
+    fclose(file);
+
+     
+    theTriangulation->theTree->theRoot->theTriangle = theTriangulation->elem;
+    theTriangulation->theTree->theRoot->theChildren = NULL;
+    
     return theTriangulation;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

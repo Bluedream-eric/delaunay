@@ -25,7 +25,6 @@ typedef struct {
 Point *sommet0;
 Point *sommet1;
 Point *sommet2;
-//int nodes[3];// les indices des 3 nodes du triangle
 int indice; 
 } Triangle; 
 
@@ -40,10 +39,8 @@ int indice;
 } Edge;
 
 typedef struct {
-  
   Triangle* theTriangle;
   myLeaf* theChildren;
-
 } myLeaf;
 
 typedef struct {

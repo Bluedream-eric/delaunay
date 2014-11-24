@@ -34,10 +34,19 @@ for(i=0; i<theTriangulation->nNode; i++)
 TriangulationWrite(ResultName, theTriangulation);
 TriangulationFree(theTriangulation);
 }
+/////////////////////////////////////////////////////////////////////////////////
+void AddPoint(Point *point, Triangulation *theTriangulation)
+{
+	Triangle *trig =NULL;
+	Edge *edge=NULL;
+	
+	PointLocate(edge, trig, point,theTriangulation); 
 
+						            
+	// Il faut faire quelques LegalizeEdge :-) TODO
+	
 
-
-
+}
 
 //////////////////////////////////////////////////
 
@@ -46,37 +55,36 @@ int IsLegal(Edge *edge, Triangulation *theTriangulation)
 
 return 1; // true
 }
-/////////////////////////////////////////////////////////////////////////////////
-void AddPoint(Point *point, Triangulation *theTriangulation)
-{
-	triangle *trig = PointLocate(point,theTriangulation); // TODO : attention on attend un triangle mais après faudra 
-						            // traiter le cas special ou on ajoute un point sur une edge ..
-						            
-	// Il faut faire quelques LegalizeEdge :-) TODO
-	
 
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 int *ComputeRandom(int n)
 {// returns a vector of int value from 1 to n in a random order
 int *tab= malloc(sizeof(int)*n);
 int i;
-for(i=0;i<n;i++)// valeur par defaut :-)
+for(i=0;i<n;i++)// valeur par defaut non aléatoire :-)
 	{tab[i]=i+1;}
 return tab; 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
-triangle *PointLocate(Point *point,Triangulation *theTriangulation)
-{// Après faudra pouvoir renvoyer si on est sur une edge ou un triangle ..
 
-triangle *trig = &(theTriangulation->elem[0]);// par defaut, le premier triangle initialisé 
-return trig; // trig est un pointeur vers un triangle du tableau elem de la structure theTriangulation :-)
+
+void PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation)
+{
+/* PointLocate: 
+On fourni en argument deux pointeurs *edge et *trig. Il faut voir où se trouve *point et mettre à jour les pointeurs
+*edge et *trig vers les éléments correspondant à la localisation de *point (un deux deux pointeurs doit être mis à NULL
+puisque le point n'est pas à la fois sur une edge et dans un triangle).
+*/
+
+//Par défaut la fonction choisi que le point à chercher est dans le premier triangle (le grand triangle 0)
+//et pas sur une edge. Il faudra modifier cela avec toute le systeme de recherche d'un point dans les arbres etc :-)
+  
+trig = &(theTriangulation->elem[0]);// par defaut, le premier triangle initialisé 
+edge = NULL;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-void LegalizeEdge(double X, double Y, Edge *edge, Triangulation *theTriangulation)
+void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 {// TODO
-	// est ce que c'est une bonne facon de faire de passer X et Y comme ça (c'est le point Pr)
-	// ou bien on fait une structure pour un node .. ?
 	if( IsLegal(edge,theTriangulation)==0 )// si c'est false
 	{
 	// 1) on switch
@@ -84,7 +92,7 @@ void LegalizeEdge(double X, double Y, Edge *edge, Triangulation *theTriangulatio
 	}
 
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// CREATE  ////////////////////////////////////////////////////////////
 Triangulation *TriangulationCreate(char *FileName)
 {
 // lire le fichier data :-)
@@ -99,19 +107,15 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     fscanf(file, "Number of nodes %d \n", &theTriangulation->nNode);
     int nNode=theTriangulation->nNode;
     
-    theTriangulation->X = malloc(sizeof(double)*(nNode+2));// on met p-1 et p-2 à la fin du vecteur :-)
-    theTriangulation->Y = malloc(sizeof(double)*(nNode+2));
     theTriangulation->points = malloc(sizeof(Point)*(nNode+2));
     for (i = 0; i < nNode; ++i) {
-        fscanf(file,"%d : %le %le \n",&trash,&theTriangulation->X[i],&theTriangulation->Y[i]);
-        theTriangulation->points[i].x=theTriangulation->X[i];// redondant, là on a les pts accesibles de 2 facons différentes
-        theTriangulation->points[i].y=theTriangulation->Y[i];
+	fscanf(file,"%d : %le %le \n",&trash,&theTriangulation->points[i].x,&theTriangulation->points[i].y);
          }
     theTriangulation->nElem = 1;    // valeur au départ
     
     findP0(theTriangulation);
         
-    theTriangulation->elem  = malloc(sizeof(triangle)*(2*nNode -2));//TODO ajuster ce nombre normalement ce sont des bornes sup 
+    theTriangulation->elem  = malloc(sizeof(Triangle)*(2*nNode -2));//TODO ajuster ce nombre normalement ce sont des bornes sup 
     theTriangulation->edges = malloc(sizeof(Edge)*(3*nNode -3));// sur la taille possible des trucs (k=0 Thm9.1)
     
     // TODO traiter p-1 et p-2 de manière symbolique 
@@ -129,6 +133,23 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
         theTriangulation->elem[0].nodes[1]=nNode;
         theTriangulation->elem[0].nodes[2]=nNode+1;	
         
+    // initialiser les 3 first edges
+    
+    theTriangulation->edges[0].elem[0]= 0;
+    theTriangulation->edges[0].elem[1]=-10;
+    theTriangulation->edges[0].node[0]= 0;
+    theTriangulation->edges[0].node[1]= 0;
+
+    theTriangulation->edges[1].elem[0]= 0; 
+    theTriangulation->edges[1].elem[1]= 0; 
+    theTriangulation->edges[1].node[0]= 0; 
+    theTriangulation->edges[1].node[1]= 0; 
+
+    theTriangulation->edges[2].elem[0]= 0; 
+    theTriangulation->edges[2].elem[1]= 0; 
+    theTriangulation->edges[2].node[0]= 0; 
+    theTriangulation->edges[2].node[1]= 0; 
+    
     fclose(file);    
     return theTriangulation;
 }
@@ -162,8 +183,6 @@ theTriangulation->points[ind]=trash;
 
 void TriangulationFree(Triangulation *theTriangulation)
 {
-    free(theTriangulation->X);
-    free(theTriangulation->Y);
     free(theTriangulation->edges);
     free(theTriangulation->points);
     free(theTriangulation->elem);

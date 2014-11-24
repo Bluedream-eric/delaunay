@@ -23,7 +23,7 @@ double y;
 
 typedef struct {
 int nodes[3];// les indices des 3 nodes du triangle
-} triangle; 
+} Triangle; 
 
 typedef struct {
     int elem[2];// ce sont les indices du tableau de triangle elem de la structure Triangulation
@@ -32,10 +32,8 @@ typedef struct {
 
 typedef struct {
     //int *elem; // on tente sans ca et avec un tableau de triangles a la place
-    triangle* elem;
+    Triangle* elem;
     Edge*     edges;
-    double *X;// from data
-    double *Y;// from data
     Point *points;// from data
     int nElem;// on met à jour quand on ajoute un triangule comme ça à la fin on sait dire combien de triangles on a construit
     int nNode;// from data
@@ -62,8 +60,8 @@ void                TriangulationFree(Triangulation *theTriangulation);
 void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation);
 int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
-void                LegalizeEdge(double X, double Y, Edge *edge, Triangulation *theTriangulation);
-triangle           *PointLocate(Point *point,Triangulation *theTriangulation);
+void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
+void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation);
 int                *ComputeRandom(int n);
 
 /*

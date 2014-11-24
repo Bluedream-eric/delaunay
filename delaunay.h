@@ -22,7 +22,7 @@ double y;
 } Point; 
 
 typedef struct {
-Point *sommet0;
+Point *sommet00;
 Point *sommet1;
 Point *sommet2;
 int indice; 

@@ -22,7 +22,7 @@ double y;
 } Point; 
 
 typedef struct {
-Point *sommet00;
+Point *sommet0;
 Point *sommet1;
 Point *sommet2;
 int indice; 
@@ -40,11 +40,12 @@ int indice;
 
 typedef struct {
   Triangle* theTriangle;
-  myLeaf* theChildren;
+  struct myLeaf* theChildren;// sans le "struct" a cette ligne il met "unknown type myleaf .."
 } myLeaf;
 
 typedef struct {
-  myLeaf theRoot;
+  //myLeaf theRoot;
+  myLeaf* theRoot;
 } myTree;
 
 typedef struct {
@@ -54,6 +55,7 @@ typedef struct {
   Point *points;// from data
   int nElem;// on met à jour quand on ajoute un triangule comme ça à la fin on sait dire combien de triangles on a construit
   int nNode;// from data
+  int nEdge;// on met à jour au fur et à mesure pour savoir à quel indice ajouter les nouvelles
   myTree* theTree;
 } Triangulation;
 

@@ -39,11 +39,63 @@ void AddPoint(Point *point, Triangulation *theTriangulation)
 {
 	Triangle *trig =NULL;
 	Edge *edge=NULL;
-	
+	int nEdge=theTriangulation->nEdge;
+	int nElem=theTriangulation->nElem;
 	PointLocate(edge, trig, point,theTriangulation,theTriangulation->theTree->theRoot); 
-
+	if(trig != NULL)
+	{// on ajoute point à l'intérieur du triangle trig
+	 // il faut ajouter 3 edges vers les 3 sommets du triangle
+	 	 
+	/* AJOUT DES TRIG */
+	theTriangulation->elem[nElem].sommet0=point;
+	theTriangulation->elem[nElem].sommet1=trig->sommet0;
+	theTriangulation->elem[nElem].sommet2=trig->sommet1;
+	theTriangulation->elem[nElem].indice=nElem;
+	
+	theTriangulation->elem[nElem+1].sommet0=point;
+	theTriangulation->elem[nElem+1].sommet1=trig->sommet1;
+	theTriangulation->elem[nElem+1].sommet2=trig->sommet2;
+	theTriangulation->elem[nElem+1].indice=nElem+1;
+	
+	theTriangulation->elem[trig->indice].sommet0=point;
+	theTriangulation->elem[trig->indice].sommet1=trig->sommet2;
+	theTriangulation->elem[trig->indice].sommet2=trig->sommet0;
+	theTriangulation->elem[trig->indice].indice=trig->indice;
+	
+	theTriangulation->nElem=nElem+2;
+	
+	/* AJOUT DES EDGES */
+	theTriangulation->edges[nEdge].P0=point;
+	theTriangulation->edges[nEdge].P1=trig->sommet0;
+	theTriangulation->edges[nEdge].indice=nEdge;	
+	theTriangulation->edges[nEdge].elem0=&theTriangulation->elem[nElem];
+	theTriangulation->edges[nEdge].elem1=&theTriangulation->elem[trig->indice];
+		
+	theTriangulation->edges[nEdge+1].P0=point;
+	theTriangulation->edges[nEdge+1].P1=trig->sommet1;
+	theTriangulation->edges[nEdge+1].indice=nEdge+1;
+	theTriangulation->edges[nEdge+1].elem0=&theTriangulation->elem[nElem+1];
+	theTriangulation->edges[nEdge+1].elem1=&theTriangulation->elem[nElem];
+	
+	theTriangulation->edges[nEdge+2].P0=point;
+	theTriangulation->edges[nEdge+2].P1=trig->sommet2;
+	theTriangulation->edges[nEdge+2].indice=nEdge+2;
+	theTriangulation->edges[nEdge+2].elem0=&theTriangulation->elem[trig->indice];
+	theTriangulation->edges[nEdge+2].elem1=&theTriangulation->elem[nElem+1];
+	
+	theTriangulation->nEdge=nEdge+3;
+	
+	LegalizeEdge(point, &theTriangulation->edges[nEdge], theTriangulation);
+	LegalizeEdge(point, &theTriangulation->edges[nEdge+1], theTriangulation);
+	LegalizeEdge(point, &theTriangulation->edges[nEdge+2], theTriangulation);
+	
+	}
+	if(edge != NULL)
+	{// le point est sur l'edge
+	
+	}
 						            
-	// Il faut faire quelques LegalizeEdge :-) TODO
+	
 	
 
 }
@@ -81,10 +133,10 @@ puisque le point n'est pas à la fois sur une edge et dans un triangle).
 
   int i = 0;
   
-  while (leaves->theChildren[i] != NULL)
+ /* while (leaves->theChildren[i] != NULL)
     {
-      // TODO
-    }
+      // TODO                                       [[[[[[[[[[[[[[[[[[[COMPILE PAS]]]]]]]]]]]]]]]]]]] 
+    }*/ 
 
 trig = leaves->theTriangle;// par defaut, le premier triangle initialisé 
 edge = NULL;
@@ -92,8 +144,10 @@ edge = NULL;
 ////////////////////////////////////////////////////////////////////////////////////////////
 void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 {// TODO
-	if( IsLegal(edge,theTriangulation)==0 )// si c'est false
-	{
+	if( IsLegal(edge,theTriangulation)==0 )// TODO attention, IsLegal a peut être besoin de point pour être efficace 
+	{					//et ne pas tester trop de truc (on sait ce qu'on vient d'ajouter)
+						// au pire on fait le IsLegal dans le AddPoint et on appelera Legalize que s'il
+						// faut legaliser :-)
 	// 1) on switch
 	// 2) on refait des LegalizeEdge 
 	}
@@ -167,6 +221,7 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->edges[2].P0=&theTriangulation->points[nNode+1];
     theTriangulation->edges[2].P1=&theTriangulation->points[0];
     
+    theTriangulation->nEdge=3;
     
     /*theTriangulation->edges[0].elem[0]= 0;
     theTriangulation->edges[0].elem[1]=-10;
@@ -186,8 +241,8 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     fclose(file);
 
      
-    theTriangulation->theTree->theRoot->theTriangle = theTriangulation->elem;
-    theTriangulation->theTree->theRoot->theChildren = NULL;
+    /*theTriangulation->theTree->theRoot->theTriangle = theTriangulation->elem;
+    theTriangulation->theTree->theRoot->theChildren = NULL;*/ // [[[[[[[[[[[[[[[[[SEGMENTATION FAULT, il faut malloc ]]]]]]]]]]]]]]]]]
     
     return theTriangulation;
 }

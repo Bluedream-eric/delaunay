@@ -1,6 +1,5 @@
 TODO:
 
-2) le cas où PointLocate on tombe sur une edge dans la fonction AddPoint
 
 -OpenGl c'est si dur ?
 

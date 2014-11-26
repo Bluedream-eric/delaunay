@@ -13,8 +13,11 @@ void triangulation(char *FileName, const char *ResultName)
 printf("on est dans triangulation \n");
 
 Triangulation *theTriangulation = TriangulationCreate(FileName);// doit aussi initialiser le triangle p0,p-1,p-2
-printf("X[0]: %f \n",   theTriangulation->points[0].x);// OK 
-printf("Y[0]: %f \n",   theTriangulation->points[0].y);// OK
+/*printf("X[1]: %f \n",   theTriangulation->points[1].x);// OK 
+printf("Y[1]: %f \n",   theTriangulation->points[1].y);// OK
+printf("indice[1]: %d \n",   theTriangulation->points[1].indice);// OK*/
+
+TriangulationWrite(ResultName, theTriangulation);
 
 // TODO: ComputeRandom: un vecteur avec les nombres de 1 à n+1 mélangés pour voir dans quel ordre on ajoute les pts
 // ce vecteur s'appelle de random. 
@@ -170,7 +173,7 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     
     theTriangulation->points = malloc(sizeof(Point)*(nNode+2));
     for (i = 0; i < nNode; ++i) {
-	fscanf(file,"%d : %le %le \n",&trash,&theTriangulation->points[i].x,&theTriangulation->points[i].y);
+	fscanf(file,"%d : %le %le \n",&theTriangulation->points[i].indice,&theTriangulation->points[i].x,&theTriangulation->points[i].y);
          }
     theTriangulation->nElem = 1;    // valeur au départ
     
@@ -184,10 +187,12 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
 	// init p-1 en (0.0 ,-1.0)
 	theTriangulation->points[nNode].x= 0.0;
 	theTriangulation->points[nNode].y=-1.0;
+	theTriangulation->points[nNode].indice=nNode;
 	
 	// init p-2 en (-10.0 , 10.0 )
 	theTriangulation->points[nNode+1].x=-10.0;
 	theTriangulation->points[nNode+1].y= 10.0;
+	theTriangulation->points[nNode+1].indice=nNode+1;
 	
 	// init le triangle[0]	
 	theTriangulation->elem[0].indice= 0;
@@ -270,6 +275,8 @@ Point trash = theTriangulation->points[0];
 theTriangulation->points[0]=theTriangulation->points[ind];
 theTriangulation->points[ind]=trash;
 
+theTriangulation->points[0].indice=0;
+theTriangulation->points[ind].indice=ind;
 }
 
 
@@ -282,90 +289,27 @@ void TriangulationFree(Triangulation *theTriangulation)
     free(theTriangulation);
 }
 
+
 void TriangulationWrite(const char *ResultName,Triangulation *theTriangulation)
-{
-// ecrit la solution dans un fichier :-)
-
-}
-
-void test(int n)
-{
-printf("test:  %d \n",n);
-}
-
-
-
-
-
-
-/*
-femMesh *femMeshRead(const char *filename)
-{
-    femMesh *theMesh = malloc(sizeof(femMesh));
-
-    int i,trash,*elem;
-    
-    FILE* file = fopen(filename,"r");
-    if (file == NULL) Error("No mesh file !");
-
-    fscanf(file, "Number of nodes %d \n", &theMesh->nNode);
-    theMesh->X = malloc(sizeof(double)*theMesh->nNode);
-    theMesh->Y = malloc(sizeof(double)*theMesh->nNode);
-    for (i = 0; i < theMesh->nNode; ++i) {
-        fscanf(file,"%d : %le %le \n",&trash,&theMesh->X[i],&theMesh->Y[i]); }
-    
-    char str[256]; fgets(str, sizeof(str), file);
-    if (!strncmp(str,"Number of triangles",19))  { 
-        sscanf(str,"Number of triangles %d \n", &theMesh->nElem);
-        theMesh->elem = malloc(sizeof(int)*3*theMesh->nElem);
-        theMesh->nLocalNode = 3;
-        for (i = 0; i < theMesh->nElem; ++i) {
-            elem = &(theMesh->elem[i*3]);
-            fscanf(file,"%d : %d %d %d\n", &trash,&elem[0],&elem[1],&elem[2]); }}
-    else if (!strncmp(str,"Number of quads",15))  { 
-        sscanf(str,"Number of quads %d \n", &theMesh->nElem);  
-        theMesh->elem = malloc(sizeof(int)*4*theMesh->nElem);
-        theMesh->nLocalNode = 4;
-        for (i = 0; i < theMesh->nElem; ++i) {
-            elem = &(theMesh->elem[i*4]);
-        fscanf(file,"%d : %d %d %d %d\n", &trash,&elem[0],&elem[1],&elem[2],&elem[3]); }}
-  
-    fclose(file);
-    return theMesh;
-}
-
-void femMeshFree(femMesh *theMesh)
-{
-    free(theMesh->X);
-    free(theMesh->Y);
-    free(theMesh->elem);
-    free(theMesh);
-}
-
-void femMeshWrite(const femMesh *theMesh, const char *filename)
 {
     int i,*elem;
     
-    FILE* file = fopen(filename,"w");
+    FILE* file = fopen(ResultName,"w");
     
-    fprintf(file, "Number of nodes %d \n", theMesh->nNode);
-    for (i = 0; i < theMesh->nNode; ++i) {
-        fprintf(file,"%6d : %14.7e %14.7e \n",i,theMesh->X[i],theMesh->Y[i]); }
+    fprintf(file, "Number of nodes %d \n", theTriangulation->nNode);
+    for (i = 0; i < theTriangulation->nNode+2; i++) {
+        fprintf(file,"%6d : %14.7e %14.7e \n",i,theTriangulation->points[i].x,theTriangulation->points[i].y); }
     
-    if (theMesh->nLocalNode == 4) {
-        fprintf(file, "Number of quads %d \n", theMesh->nElem);  
-        for (i = 0; i < theMesh->nElem; ++i) {
-            elem = &(theMesh->elem[i*4]);
-            fprintf(file,"%6d : %6d %6d %6d %6d \n", i,elem[0],elem[1],elem[2],elem[3]);   }}
-    else if (theMesh->nLocalNode == 3) {
-        fprintf(file, "Number of triangles %d \n", theMesh->nElem);  
-        for (i = 0; i < theMesh->nElem; ++i) {
-            elem = &(theMesh->elem[i*3]);
-            fprintf(file,"%6d : %6d %6d %6d \n", i,elem[0],elem[1],elem[2]);   }}
+  	     fprintf(file, "Number of triangles %d \n", theTriangulation->nElem);  
+        for (i = 0; i < theTriangulation->nElem; i++) {
+            //elem = &(theMesh->elem[i*3]);
+            fprintf(file,"%6d : %6d %6d %6d \n", i,theTriangulation->elem[i].sommet0->indice,
+            				           theTriangulation->elem[i].sommet1->indice,
+            				           theTriangulation->elem[i].sommet2->indice);}
     
     fclose(file);
 }
-  */
+  
   
   /*
 void femEdgesPrint(femEdges *theEdges)
@@ -377,12 +321,11 @@ void femEdgesPrint(femEdges *theEdges)
                theEdges->edges[i].elem[0],theEdges->edges[i].elem[1]); }
 }
 
-void femEdgesFree(femEdges *theEdges)
-{
-    free(theEdges->edges);
-    free(theEdges);
-}
 */
+
+
+
+
 /*
 void Error(char *text, int line, char *file)                                  
 { 

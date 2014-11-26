@@ -19,6 +19,7 @@
 typedef struct {
 double x; 
 double y;
+int indice;
 } Point; 
 
 typedef struct {
@@ -59,23 +60,10 @@ typedef struct {
   myTree* theTree;
 } Triangulation;
 
-
-
-
-/*
-typedef struct {
-    femMesh *mesh;
-    femEdge *edges;
-    int nEdge;
-    int nBoundary;
-} femEdges;// inutile je crois 
-*/
-
 /* ////////////////////////////////// Les methodes //////////////////////////// */
 
 
 void 		    triangulation(char *FileName, const char *ResultName);
-void 		    test(int n);
 Triangulation      *TriangulationCreate(char *FileName);
 void                TriangulationWrite(const char *ResultName, Triangulation *theTriangulation);
 void                TriangulationFree(Triangulation *theTriangulation);

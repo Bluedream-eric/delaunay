@@ -7,6 +7,8 @@
 #define Error(a)   Error(a,__LINE__,__FILE__)
 #define Warning(a) Warning(a,  __LINE__, __FILE__)
 
+static Triangle *trigGlobal =NULL;
+static Edge *edgeGlobal=NULL;
 
 void triangulation(char *FileName, const char *ResultName)
 {
@@ -26,8 +28,8 @@ int *random = ComputeRandom(theTriangulation->nNode-1);
 int i=0;
 for(i=0; i<theTriangulation->nNode; i++)
 {
-     //AddPoint(theTriangulation->points[random[i]], theTriangulation);
     AddPoint(&(theTriangulation->points[random[i]]), theTriangulation);
+	break;
 }
 
 
@@ -40,50 +42,57 @@ TriangulationFree(theTriangulation);
 /////////////////////////////////////////////////////////////////////////////////
 void AddPoint(Point *point, Triangulation *theTriangulation)
 {
-	Triangle *trig =NULL;
-	Edge *edge=NULL;
+	//Triangle *trig =NULL;
+	//Edge *edge=NULL;
+	trigGlobal =NULL;
+	edgeGlobal=NULL;
+
 	int nEdge=theTriangulation->nEdge;
 	int nElem=theTriangulation->nElem;
-	PointLocate(edge, trig, point,theTriangulation,theTriangulation->theTree->theRoot); 
-	if(trig != NULL)
+	//PointLocate(edge, trig, point,theTriangulation,theTriangulation->theTree->theRoot); 
+	PointLocate(point,theTriangulation,theTriangulation->theTree->theRoot); 
+	
+	if(trigGlobal != NULL)
 	{// on ajoute point à l'intérieur du triangle trig
 	 // il faut ajouter 3 edges vers les 3 sommets du triangle
-	 	 
+	 	 printf("on ajoute des triangles \n ");
 	/* AJOUT DES TRIG */
 	theTriangulation->elem[nElem].sommet0=point;
-	theTriangulation->elem[nElem].sommet1=trig->sommet0;
-	theTriangulation->elem[nElem].sommet2=trig->sommet1;
+	theTriangulation->elem[nElem].sommet1=trigGlobal->sommet0;
+	theTriangulation->elem[nElem].sommet2=trigGlobal->sommet1;
 	theTriangulation->elem[nElem].indice=nElem;
 	
 	theTriangulation->elem[nElem+1].sommet0=point;
-	theTriangulation->elem[nElem+1].sommet1=trig->sommet1;
-	theTriangulation->elem[nElem+1].sommet2=trig->sommet2;
+	theTriangulation->elem[nElem+1].sommet1=trigGlobal->sommet1;
+	theTriangulation->elem[nElem+1].sommet2=trigGlobal->sommet2;
 	theTriangulation->elem[nElem+1].indice=nElem+1;
 	
-	theTriangulation->elem[trig->indice].sommet0=point;
-	theTriangulation->elem[trig->indice].sommet1=trig->sommet2;
-	theTriangulation->elem[trig->indice].sommet2=trig->sommet0;
-	theTriangulation->elem[trig->indice].indice=trig->indice;
+	Point *pt=theTriangulation->elem[trigGlobal->indice].sommet0;
+	theTriangulation->elem[trigGlobal->indice].sommet0=point;
+	theTriangulation->elem[trigGlobal->indice].sommet1=trigGlobal->sommet2;
+//	theTriangulation->elem[trigGlobal->indice].sommet2=trigGlobal->sommet0;
+	theTriangulation->elem[trigGlobal->indice].sommet2=pt;
+	theTriangulation->elem[trigGlobal->indice].indice=trigGlobal->indice;
 	
 	theTriangulation->nElem=nElem+2;
 	
 	/* AJOUT DES EDGES */
 	theTriangulation->edges[nEdge].P0=point;
-	theTriangulation->edges[nEdge].P1=trig->sommet0;
+	theTriangulation->edges[nEdge].P1=trigGlobal->sommet0;
 	theTriangulation->edges[nEdge].indice=nEdge;	
 	theTriangulation->edges[nEdge].elem0=&theTriangulation->elem[nElem];
-	theTriangulation->edges[nEdge].elem1=&theTriangulation->elem[trig->indice];
+	theTriangulation->edges[nEdge].elem1=&theTriangulation->elem[trigGlobal->indice];
 		
 	theTriangulation->edges[nEdge+1].P0=point;
-	theTriangulation->edges[nEdge+1].P1=trig->sommet1;
+	theTriangulation->edges[nEdge+1].P1=trigGlobal->sommet1;
 	theTriangulation->edges[nEdge+1].indice=nEdge+1;
 	theTriangulation->edges[nEdge+1].elem0=&theTriangulation->elem[nElem+1];
 	theTriangulation->edges[nEdge+1].elem1=&theTriangulation->elem[nElem];
 	
 	theTriangulation->edges[nEdge+2].P0=point;
-	theTriangulation->edges[nEdge+2].P1=trig->sommet2;
+	theTriangulation->edges[nEdge+2].P1=trigGlobal->sommet2;
 	theTriangulation->edges[nEdge+2].indice=nEdge+2;
-	theTriangulation->edges[nEdge+2].elem0=&theTriangulation->elem[trig->indice];
+	theTriangulation->edges[nEdge+2].elem0=&theTriangulation->elem[trigGlobal->indice];
 	theTriangulation->edges[nEdge+2].elem1=&theTriangulation->elem[nElem+1];
 	
 	theTriangulation->nEdge=nEdge+3;
@@ -93,9 +102,9 @@ void AddPoint(Point *point, Triangulation *theTriangulation)
 	LegalizeEdge(point, &theTriangulation->edges[nEdge+2], theTriangulation);
 	
 	}
-	if(edge != NULL)
+	if(edgeGlobal != NULL)
 	{// le point est sur l'edge
-	
+	// TODO 
 	}
 						            
 	
@@ -123,10 +132,15 @@ return tab;
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation,myLeaf *leaves)
+void PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves)
 {
 /* PointLocate: 
-On fourni en argument deux pointeurs *edge et *trig. Il faut voir où se trouve *point et mettre à jour les pointeurs
+[[ATTENTION]]: Il faut mettre à jour des pointeurs static qui sont trigGlobal et edgeGlobal. Parce qu'on en a besoin dans une autre fonction
+et un peu bizarrement c'est le seul truc que j'ai trouvé, quand j'y pense j'ai du louper quelque chose...
+Normalement quand tu passe un pointeur en argument et que tu le modifie, il change et on a sa valeur modifiée partout dans le code. 
+Je ne sais aps pourquoi cela n'a pas marché ..
+
+ Il faut voir où se trouve *point et mettre à jour les pointeurs
 *edge et *trig vers les éléments correspondant à la localisation de *point (un deux deux pointeurs doit être mis à NULL
 puisque le point n'est pas à la fois sur une edge et dans un triangle).
 */
@@ -141,8 +155,9 @@ puisque le point n'est pas à la fois sur une edge et dans un triangle).
       // TODO                                       [[[[[[[[[[[[[[[[[[[COMPILE PAS]]]]]]]]]]]]]]]]]]] 
     }*/ 
 
-trig = leaves->theTriangle;// par defaut, le premier triangle initialisé 
-edge = NULL;
+trigGlobal=&theTriangulation->elem[0];
+//trigGlobal = leaves->theTriangle;// par defaut, le premier triangle initialisé 
+edgeGlobal = NULL;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
@@ -168,12 +183,14 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     FILE* file = fopen(FileName,"r");
     //if (file == NULL) Error("No data file !",35,"something");
 
-    fscanf(file, "Number of nodes %d \n", &theTriangulation->nNode);
+    trash = fscanf(file, "Number of nodes %d \n", &theTriangulation->nNode);
     int nNode=theTriangulation->nNode;
     
     theTriangulation->points = malloc(sizeof(Point)*(nNode+2));
     for (i = 0; i < nNode; ++i) {
-	fscanf(file,"%d : %le %le \n",&theTriangulation->points[i].indice,&theTriangulation->points[i].x,&theTriangulation->points[i].y);
+	trash = fscanf(file,"%d : %le %le \n",&theTriangulation->points[i].indice,
+					      &theTriangulation->points[i].x,
+					      &theTriangulation->points[i].y);
          }
     theTriangulation->nElem = 1;    // valeur au départ
     
@@ -292,7 +309,7 @@ void TriangulationFree(Triangulation *theTriangulation)
 
 void TriangulationWrite(const char *ResultName,Triangulation *theTriangulation)
 {
-    int i,*elem;
+    int i;
     
     FILE* file = fopen(ResultName,"w");
     

@@ -1,12 +1,13 @@
 TODO:
 
-1) IsLegal et Legalize
 2) le cas où PointLocate on tombe sur une edge dans la fonction AddPoint
+
+-OpenGl c'est si dur ?
 
 
 NOW: 
--fonction Write qui sort les nodes qui sont déjà ajoutés et les edges :-)
-		ça va permettre de debugger
 
--OpenGl c'est si dur ?
+1) IsLegal et Legalize
+
+
 

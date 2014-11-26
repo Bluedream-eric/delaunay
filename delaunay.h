@@ -72,7 +72,8 @@ void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation);
 int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
-void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
+//void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
+void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves);
 int                *ComputeRandom(int n);
 
 /*

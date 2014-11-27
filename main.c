@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "glfem.h"
 
-void triangulation(char *FileName, const char *ResultName);
+
+Triangulation *triangulation(char *FileName, const char *ResultName);
 void test(int n);
 
 int main(void)
@@ -15,8 +17,24 @@ int main(void)
 				
 		//clock_gettime(CLOCK_MONOTONIC, &start);
 		
-		triangulation(FileName, ResultName);
+		Triangulation *theTriangulation= triangulation(FileName, ResultName);
 
+		 glfemInit("Delaunay");
+    do
+    {
+        int w,h;
+        glfwGetWindowSize(&w,&h);
+        glfemReshapeWindows(theTriangulation,w,h);
+        glfemPlotMesh(theTriangulation); 
+        glfwSwapBuffers();
+    } 
+    while( glfwGetKey(GLFW_KEY_ESC) != GLFW_PRESS &&
+           glfwGetWindowParam(GLFW_OPENED) );
+           
+    // Check if the ESC key was pressed or the window was closed 
+    glfwTerminate(); 
+    
+    
 		//clock_gettime(CLOCK_MONOTONIC, &finish);
 /* 
 		elapsed = (finish.tv_sec - start.tv_sec);

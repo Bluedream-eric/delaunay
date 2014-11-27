@@ -16,7 +16,7 @@ LIBS     = -lglfw -lm -lGL -lglut -lGLU -lpthread
 #
 PROG     = myDelaunay
 LISTEOBJ = \
-  delaunay.o main.o #graphic.o
+  delaunay.o main.o glfem.o #graphic.o
 # ATTENTION... aucun caractere apres le caractere de continuation "\"
 #
 # compilation
@@ -29,8 +29,8 @@ LISTEOBJ = \
 #
 all        : $(PROG)
 delaunay.o 	   : delaunay.c
-main.o		   : main.c
-#graphic.o 		: graphic.c
+glfem.o            : glfem.c delaunay.h glfem.h
+main.o		   : main.c glfem.h
 #
 # edition de lien
 #

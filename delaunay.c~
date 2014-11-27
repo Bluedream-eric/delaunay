@@ -9,7 +9,7 @@
 
 static Triangle *trigGlobal =NULL;
 static Edge *edgeGlobal=NULL;
-Triangulation *triangulation(char *FileName, const char *ResultName)
+void triangulation(char *FileName, const char *ResultName)
 {
 printf("on est dans triangulation \n");
 
@@ -28,7 +28,7 @@ int i=0;
 for(i=0; i<theTriangulation->nNode; i++)
 {
     AddPoint(&(theTriangulation->points[random[i]]), theTriangulation);
-    if(i==0){break;}
+    if(i==1){break;}
 }
 
 
@@ -36,8 +36,7 @@ for(i=0; i<theTriangulation->nNode; i++)
 // TODO: RemoveExtraPoints (enlever les points -1 et -2 ainsi que les edges qui les touchent)
 
 TriangulationWrite(ResultName, theTriangulation);
-return theTriangulation;
-//TriangulationFree(theTriangulation);
+TriangulationFree(theTriangulation);
 }
 /////////////////////////////////////////////////////////////////////////////////
 void AddPoint(Point *point, Triangulation *theTriangulation)
@@ -312,8 +311,14 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
 	theTriangulation->elem[0].sommet0= &theTriangulation->points[0];     // pointe vers p0;
 	theTriangulation->elem[0].sommet1= &theTriangulation->points[nNode];
 	theTriangulation->elem[0].sommet2= &theTriangulation->points[nNode+1];
-
-    // initialiser les 3 first edges:     
+	//theTriangulation->elem[0].nodes[0]=0;
+        //theTriangulation->elem[0].nodes[1]=nNode;
+        //theTriangulation->elem[0].nodes[2]=nNode+1;	
+        
+        
+        
+    // initialiser les 3 first edges: 
+    
     theTriangulation->edges[0].indice=0;//va de p0 à p-1
     theTriangulation->edges[0].elem0=&theTriangulation->elem[0];
     theTriangulation->edges[0].elem1=NULL;
@@ -334,6 +339,21 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->edges[2].P1=&theTriangulation->points[0];
     
     theTriangulation->nEdge=3;
+    
+    /*theTriangulation->edges[0].elem[0]= 0;
+    theTriangulation->edges[0].elem[1]=-10;
+    theTriangulation->edges[0].node[0]= ;
+    theTriangulation->edges[0].node[1]= ;
+    
+    theTriangulation->edges[1].elem[0]= 0; 
+    theTriangulation->edges[1].elem[1]= -10; 
+    theTriangulation->edges[1].node[0]= ; 
+    theTriangulation->edges[1].node[1]= ; 
+    
+    theTriangulation->edges[2].elem[0]= 0; 
+    theTriangulation->edges[2].elem[1]= -10; 
+    theTriangulation->edges[2].node[0]= ; 
+    theTriangulation->edges[2].node[1]= ; */
     
     fclose(file);
 

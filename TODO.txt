@@ -1,9 +1,6 @@
 TODO:
 
 
--OpenGl c'est si dur ?
-
-
 NOW: 
 
 1) IsLegal et Legalize

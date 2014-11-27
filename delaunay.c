@@ -7,8 +7,7 @@
 #define Error(a)   Error(a,__LINE__,__FILE__)
 #define Warning(a) Warning(a,  __LINE__, __FILE__)
 
-//static Triangle *trigGlobal =NULL;
-//static Edge *edgeGlobal=NULL;
+
 Triangulation *triangulation(char *FileName, const char *ResultName)
 {
 printf("on est dans triangulation \n");
@@ -108,7 +107,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)
 	LegalizeEdge(point, &theTriangulation->edges[nEdge+2], theTriangulation);
 	/////////////////////////////////////////////////////////////////////
 	}
-	if(theTriangulation->edgeGlobal != NULL)
+	else if(theTriangulation->edgeGlobal != NULL)
 	{// le point est sur l'edge
 	//////////////////////////////// 1) triangle0 ///////////////////
 	Triangle *triangle0=theTriangulation->edgeGlobal->elem0;
@@ -200,10 +199,10 @@ void AddPoint(Point *point, Triangulation *theTriangulation)
 		theTriangulation->nEdge=nEdge+3;
 		theTriangulation->nElem=nElem+2;
 	////////////////////////////////////////////////////////////////////
-	/*LegalizeEdge(point,   ,theTriangulation);
-	LegalizeEdge(point,   ,theTriangulation);
-	LegalizeEdge(point,   ,theTriangulation);
-	LegalizeEdge(point,   ,theTriangulation);*/	// TODO 
+	LegalizeEdge(point,&theTriangulation->edges[theTriangulation->edgeGlobal->indice],theTriangulation);
+	LegalizeEdge(point,&theTriangulation->edges[nEdge],theTriangulation);
+	LegalizeEdge(point,&theTriangulation->edges[nEdge+1],theTriangulation);
+	LegalizeEdge(point,&theTriangulation->edges[nEdge+2],theTriangulation); 
 }
 }
 

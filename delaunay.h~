@@ -32,8 +32,6 @@ int indice;
 typedef struct {
 Triangle *elem0;
 Triangle *elem1;
-    //int elem[2];// ce sont les indices du tableau de triangle elem de la structure Triangulation
-    //int node[2];
 Point *P0;
 Point *P1;
 int indice; 
@@ -50,12 +48,11 @@ typedef struct {
 } myTree;
 
 typedef struct {
-  //int *elem; // on tente sans ca et avec un tableau de triangles a la place
   Triangle* elem;
   Edge*     edges;
-  Point *points;// from data
+  Point *points;
   int nElem;// on met à jour quand on ajoute un triangule comme ça à la fin on sait dire combien de triangles on a construit
-  int nNode;// from data
+  int nNode;// from data, on compte pas les p-1 et p-2
   int nEdge;// on met à jour au fur et à mesure pour savoir à quel indice ajouter les nouvelles
   myTree* theTree;
 } Triangulation;
@@ -63,7 +60,8 @@ typedef struct {
 /* ////////////////////////////////// Les methodes //////////////////////////// */
 
 
-void 		    triangulation(char *FileName, const char *ResultName);
+//void 		    triangulation(char *FileName, const char *ResultName);
+Triangulation      *triangulation(char *FileName, const char *ResultName);
 Triangulation      *TriangulationCreate(char *FileName);
 void                TriangulationWrite(const char *ResultName, Triangulation *theTriangulation);
 void                TriangulationFree(Triangulation *theTriangulation);
@@ -72,7 +70,8 @@ void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation);
 int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
-void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
+//void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
+void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves);
 int                *ComputeRandom(int n);
 
 /*

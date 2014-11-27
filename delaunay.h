@@ -55,6 +55,8 @@ typedef struct {
   int nNode;// from data, on compte pas les p-1 et p-2
   int nEdge;// on met à jour au fur et à mesure pour savoir à quel indice ajouter les nouvelles
   myTree* theTree;
+  Edge *edgeGlobal;
+  Triangle *trigGlobal;
 } Triangulation;
 
 /* ////////////////////////////////// Les methodes //////////////////////////// */

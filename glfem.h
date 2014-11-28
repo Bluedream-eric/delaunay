@@ -13,7 +13,7 @@
 #ifndef _GLFEM_H_
 #define _GLFEM_H_
 
-#include <GL/glfw.h>
+#include "GL/glfw.h"
 #include "delaunay.h"
 
 void glfemDrawColorElement(float *x, float *y, double *u, int n);

@@ -12,10 +12,7 @@ Triangulation *triangulation(char *FileName, const char *ResultName)
 {
 printf("on est dans triangulation \n");
 
-Triangulation *theTriangulation = TriangulationCreate(FileName);// doit aussi initialiser le triangle p0,p-1,p-2
-/*printf("X[1]: %f \n",   theTriangulation->points[1].x);// OK 
-printf("Y[1]: %f \n",   theTriangulation->points[1].y);// OK
-printf("indice[1]: %d \n",   theTriangulation->points[1].indice);// OK*/
+Triangulation *theTriangulation = TriangulationCreate(FileName);
 
 TriangulationWrite(ResultName, theTriangulation);
 
@@ -43,12 +40,12 @@ void AddPoint(Point *point, Triangulation *theTriangulation)
 {
 	//Triangle *trig =NULL;
 	//Edge *edge=NULL;
-	theTriangulation->trigGlobal =NULL;
+	theTriangulation->trigGlobal=NULL;
 	theTriangulation->edgeGlobal=NULL;
 
 	int nEdge=theTriangulation->nEdge;
 	int nElem=theTriangulation->nElem;
-	//PointLocate(edge, trig, point,theTriangulation,theTriangulation->theTree->theRoot); 
+	 
 	PointLocate(point,theTriangulation,theTriangulation->theTree->theRoot); 
 	
 	if(theTriangulation->trigGlobal != NULL)
@@ -228,31 +225,73 @@ return tab;
 
 void PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves)
 {
-/* PointLocate: 
-[[ATTENTION]]: Il faut mettre à jour des pointeurs static qui sont trigGlobal et edgeGlobal. Parce qu'on en a besoin dans une autre fonction
-et un peu bizarrement c'est le seul truc que j'ai trouvé, quand j'y pense j'ai du louper quelque chose...
-Normalement quand tu passe un pointeur en argument et que tu le modifie, il change et on a sa valeur modifiée partout dans le code. 
-Je ne sais aps pourquoi cela n'a pas marché ..
-
- Il faut voir où se trouve *point et mettre à jour les pointeurs
-*edge et *trig vers les éléments correspondant à la localisation de *point (un deux deux pointeurs doit être mis à NULL
-puisque le point n'est pas à la fois sur une edge et dans un triangle).
-*/
-
-//Par défaut la fonction choisi que le point à chercher est dans le premier triangle (le grand triangle 0)
-//et pas sur une edge. Il faudra modifier cela avec toute le systeme de recherche d'un point dans les arbres etc :-)
-
-  int i = 0;
   
- /* while (leaves->theChildren[i] != NULL)
+  if (leaves->theChildren != NULL) // not the real leaves: check child by child
     {
-      // TODO                                       [[[[[[[[[[[[[[[[[[[COMPILE PAS]]]]]]]]]]]]]]]]]]] 
-    }*/ 
+      int i = 0;
+      while (!(withinTriangle(point,leaves->theChildren[i].theTriangle)) && (i < leaves->nChildren)) 
+	i++;
+	 
 
-theTriangulation->trigGlobal=&theTriangulation->elem[0];
-//trigGlobal = leaves->theTriangle;// par defaut, le premier triangle initialisé 
-theTriangulation->edgeGlobal = NULL;
+      PointLocate(point,theTriangulation,&(leaves->theChildren[i]));
+    }
+  else//theTriangulation->trigGlobal = leaves->theTriangle;
+      onSide(point,leaves->theTriangle,theTriangulation); //TODO: onSide
 }
+
+//-------------------
+
+int withinTriangle(Point *point,Triangle *triangle)
+{
+  return ( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) == ( triArea(*(triangle->sommet0),*(triangle->sommet1),*point) + triArea(*(triangle->sommet1),*(triangle->sommet2),*point) + triArea(*(triangle->sommet1),*(triangle->sommet2),*point) ) );
+}
+
+
+//---------------
+double ptNorm(Point point1, Point point2)
+{ 
+  return sqrt( (point2.x-point1.x)*(point2.x-point1.x) + (point2.y-point1.y)*(point2.y-point1.y) );
+}
+//-------------
+
+double crossProd(Point point0, Point point1, Point point2)
+{
+  return ( (point2.x-point0.x)*(point1.y-point0.y) - (point1.x-point0.x)*(point2.y-point0.y) );
+}
+
+//--------
+
+double triArea(Point point0, Point point1, Point point2)
+{
+  return (crossProd(point0,point1,point2)/2);
+}
+
+//---------
+void onSide(Point *point, Triangle *triangle,Triangulation *theTriangulation)
+{
+  if ( crossProd(*point,*(triangle->sommet0),*(triangle->sommet1) ) == 0 )
+    {
+      theTriangulation->trigGlobal = NULL;
+      theTriangulation->edgeGlobal = NULL;// need edges related to the triangle :-(
+    }
+  else if( crossProd(*point,*(triangle->sommet1),*(triangle->sommet2) ) == 0 )
+    {
+      theTriangulation->trigGlobal = NULL;
+      theTriangulation->edgeGlobal = NULL;// need edges related to the triangle :-(
+    }
+  else if( crossProd(*point,*(triangle->sommet2),*(triangle->sommet0) ) ==0 )
+    {
+      theTriangulation->trigGlobal = NULL;
+      theTriangulation->edgeGlobal = NULL;// need edges related to the triangle :-(
+    }
+  else
+    {
+      theTriangulation->trigGlobal = triangle;
+      theTriangulation->edgeGlobal = NULL;
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 {// TODO
@@ -339,6 +378,14 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     
     theTriangulation->nEdge=3;
     
+    // tree initialization
+    myLeaf *triangleZero = malloc(sizeof(myLeaf*));
+    triangleZero->theTriangle = theTriangulation->elem;
+    triangleZero->theChildren = NULL;
+    triangleZero->nChildren = 0;
+    theTriangulation->theTree = malloc(sizeof(myTree*));
+    theTriangulation->theTree->theRoot = triangleZero;
+
     fclose(file);
 
      

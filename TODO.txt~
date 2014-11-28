@@ -1,7 +1,13 @@
 TODO:
 
 
+-OpenGl c'est si dur ?
+
+
 NOW: 
+
+-print les edges
+2) le cas où PointLocate on tombe sur une edge dans la fonction AddPoint
 
 1) IsLegal et Legalize
 

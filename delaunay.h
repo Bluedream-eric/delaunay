@@ -37,14 +37,10 @@ Point *P1;
 int indice; 
 } Edge;
 
-
-
-typedef struct myLeaf myLeaf;
-struct myLeaf{
+typedef struct {
   Triangle* theTriangle;
-  myLeaf* theChildren;// sans le "struct" a cette ligne il met "unknown type myleaf .."
-  int nChildren; 
-};
+  struct myLeaf* theChildren;// sans le "struct" a cette ligne il met "unknown type myleaf .."
+} myLeaf;
 
 typedef struct {
   //myLeaf theRoot;
@@ -78,18 +74,6 @@ int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
 //void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
 void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves);
-
-int  withinTriangle(Point *point,Triangle *triangle);
-
-double ptNorm(Point point1, Point point2);
-
-double crossProd(Point point0, Point point1, Point point2);
-
-double triArea(Point point0, Point point1, Point point2);
-
-
-void onSide(Point *point, Triangle *triangle,Triangulation *theTriangulation);
-
 int                *ComputeRandom(int n);
 
 /*

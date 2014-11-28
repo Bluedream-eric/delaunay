@@ -4,8 +4,8 @@
 #include "glfem.h"
 
 
-//Triangulation *triangulation(char *FileName, const char *ResultName);
-//void test(int n);
+Triangulation *triangulation(char *FileName, const char *ResultName);
+void test(int n);
 
 int main(void)
 {   
@@ -19,8 +19,7 @@ int main(void)
 		
 		Triangulation *theTriangulation= triangulation(FileName, ResultName);
 
-
-		/*		 glfemInit("Delaunay");
+		 glfemInit("Delaunay");
     do
     {
         int w,h;
@@ -34,7 +33,7 @@ int main(void)
            
     // Check if the ESC key was pressed or the window was closed 
     glfwTerminate(); 
-		*/
+    
     
 		//clock_gettime(CLOCK_MONOTONIC, &finish);
 /* 

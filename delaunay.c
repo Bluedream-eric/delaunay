@@ -225,7 +225,6 @@ return tab;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-
 void PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves)
 {
 /* PointLocate: 

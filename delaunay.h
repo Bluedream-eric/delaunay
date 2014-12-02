@@ -22,25 +22,33 @@ double y;
 int indice;
 } Point; 
 
+
+
 typedef struct {
 Point *sommet0;
 Point *sommet1;
 Point *sommet2;
+struct Edge *edge0;
+struct Edge *edge1;
+struct Edge *edge2; 
 int indice; 
 } Triangle; 
 
-typedef struct {
+typedef struct Edge Edge;
+struct Edge {
 Triangle *elem0;
 Triangle *elem1;
 Point *P0;
 Point *P1;
 int indice; 
-} Edge;
+};
 
-typedef struct {
-  Triangle* theTriangle;
-  struct myLeaf* theChildren;// sans le "struct" a cette ligne il met "unknown type myleaf .."
-} myLeaf;
+typedef struct myLeaf myLeaf;
+struct myLeaf{
+Triangle* theTriangle;
+myLeaf* theChildren;// sans le "struct" a cette ligne il met "unknown type myleaf ..". Encore ?
+int nChildren;
+};
 
 typedef struct {
   //myLeaf theRoot;
@@ -51,9 +59,9 @@ typedef struct {
   Triangle* elem;
   Edge*     edges;
   Point *points;
-  int nElem;// on met à jour quand on ajoute un triangule comme ça à la fin on sait dire combien de triangles on a construit
-  int nNode;// from data, on compte pas les p-1 et p-2
-  int nEdge;// on met à jour au fur et à mesure pour savoir à quel indice ajouter les nouvelles
+  int nElem;// a tenir a jour
+  int nNode;// fixe des le debut, on compte pas les p-1 et p-2
+  int nEdge;// a tenir a jour
   myTree* theTree;
   Edge *edgeGlobal;
   Triangle *trigGlobal;
@@ -72,9 +80,17 @@ void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation);
 int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
-//void                PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
+//void              PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
 void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves);
 int                *ComputeRandom(int n);
+
+
+int 		    withinTriangle(Point *point,Triangle *triangle);
+double 		    ptNorm(Point point1, Point point2);
+double 	            crossProd(Point point0, Point point1, Point point2);
+double 	            triArea(Point point0, Point point1, Point point2);
+void                onSide(Point *point, Triangle *triangle,Triangulation *theTriangulation);
+
 
 /*
 

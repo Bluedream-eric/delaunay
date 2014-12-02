@@ -1,14 +1,12 @@
 TODO:
 
+-) decommenter les edges après "/ init le triangle[0]" quand ça sera déclaré
+			Et à d'autres endroits: KEYWORD=ENABELEDGES
 
--OpenGl c'est si dur ?
 
-
-NOW: 
-
--print les edges
-2) le cas où PointLocate on tombe sur une edge dans la fonction AddPoint
-
+NOW:
+ 
+0) Mettre un pointeur vers les edges depuis les triangles 
 1) IsLegal et Legalize
 
 

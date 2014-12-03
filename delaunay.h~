@@ -34,13 +34,14 @@ struct Edge *edge2;
 int indice; 
 } Triangle; 
 
-typedef struct {
+typedef struct Edge Edge;
+struct Edge {
 Triangle *elem0;
 Triangle *elem1;
 Point *P0;
 Point *P1;
 int indice; 
-} Edge;
+};
 
 typedef struct myLeaf myLeaf;
 struct myLeaf{
@@ -76,11 +77,11 @@ void                TriangulationWrite(const char *ResultName, Triangulation *th
 void                TriangulationFree(Triangulation *theTriangulation);
 
 void                findP0(Triangulation *theTriangulation);
-void                AddPoint(Point *point, Triangulation *theTriangulation);
+void                AddPoint(Point *point, Triangulation *theTriangulation, int i);
 int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
 //void              PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
-void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves);
+void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves, int i);
 int                *ComputeRandom(int n);
 
 

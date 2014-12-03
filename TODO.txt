@@ -1,7 +1,6 @@
 TODO:
 
--) decommenter les edges après "/ init le triangle[0]" quand ça sera déclaré
-			Et à d'autres endroits: KEYWORD=ENABELEDGES
+vérifier que l'ordre des opérations pour les pointeurs est ok
 
 chekc ce qu'il faut et surtout, il faudra peut être descendre les trucs ajoutés dans la partie "si on est sur une edge"
 		 et en plus de cela avoir enregistré des pointeurs parce que j'utilise probablement des trucs qui ne sont plus ce qu'ils étaient au début (mis à jour ..)

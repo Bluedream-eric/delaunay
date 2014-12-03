@@ -42,7 +42,7 @@ return theTriangulation;
 //TriangulationFree(theTriangulation);
 }
 /////////////////////////////////////////////////////////////////////////////////
-void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les pointeurs sur les edges
+void AddPoint(Point *point, Triangulation *theTriangulation)
 {
 	theTriangulation->trigGlobal =NULL;
 	theTriangulation->edgeGlobal=NULL;
@@ -121,7 +121,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 	LegalizeEdge(point, &theTriangulation->edges[nEdge+2], theTriangulation);
 	/////////////////////////////////////////////////////////////////////
 	}
-	else if(theTriangulation->edgeGlobal != NULL)// TODO ajouter les pointeurs Triangle->Edge
+	else if(theTriangulation->edgeGlobal != NULL)
 	{// le point est sur une edge
 	printf("on est sur une edge \n ");
 	
@@ -168,7 +168,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 	
 	theTriangulation->elem[nElem].edge0= &theTriangulation->edges[nEdge+2];
 	theTriangulation->elem[nElem].edge1= edgeB;
-	theTriangulation->elem[nElem].edge2= &theTriangulation->edges[nEdge];  // TODO check
+	theTriangulation->elem[nElem].edge2= &theTriangulation->edges[nEdge];  
 	
 	//////////////////////////////////////////////////////////////
 	theTriangulation->elem[triangle0->indice].indice=triangle0->indice;
@@ -178,7 +178,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 	
 	theTriangulation->elem[triangle0->indice].edge0= &theTriangulation->edges[theTriangulation->edgeGlobal->indice];
 	theTriangulation->elem[triangle0->indice].edge1= edgeA;
-	theTriangulation->elem[triangle0->indice].edge2= &theTriangulation->edges[nEdge]; // TODO check
+	theTriangulation->elem[triangle0->indice].edge2= &theTriangulation->edges[nEdge]; 
 	
 	/* AJOUT DE 1 EDGE */
 	theTriangulation->edges[nEdge].indice=nEdge;
@@ -208,23 +208,19 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 
 	/* Find point_exterieur1 */
 	Point *point_exterieur1=NULL;
-	//int ind_node0=0;
 	if(  triangle1->sommet0->indice != theTriangulation->edgeGlobal->P0->indice
 			 && triangle1->sommet0->indice != theTriangulation->edgeGlobal->P1->indice )
 	{
 		point_exterieur1=triangle1->sommet0;
-		//ind_node0 = 0; 
 	}
 	else if(  triangle1->sommet1->indice != theTriangulation->edgeGlobal->P0->indice 
 			&& triangle1->sommet1->indice != theTriangulation->edgeGlobal->P1->indice )
 	{
 		point_exterieur1=triangle1->sommet1;
-		//ind_node0 = 1; 
 	}
 	else
 	{
 		point_exterieur1=triangle1->sommet2;
-		//ind_node0 = 2;
 	}
 	
 	/* AJOUT DE 2 TRIG */
@@ -235,7 +231,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 		
 	theTriangulation->elem[nElem+1].edge0= &theTriangulation->edges[nEdge+2];
 	theTriangulation->elem[nElem+1].edge1= edgeD;
-	theTriangulation->elem[nElem+1].edge2= &theTriangulation->edges[nEdge+1]; // TODO checker
+	theTriangulation->elem[nElem+1].edge2= &theTriangulation->edges[nEdge+1]; 
 		
 	///////////////////////////////////////////////////////
 	theTriangulation->elem[triangle1->indice].indice=triangle1->indice;
@@ -245,7 +241,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 		
 	theTriangulation->elem[triangle1->indice].edge0= &theTriangulation->edges[theTriangulation->edgeGlobal->indice];
 	theTriangulation->elem[triangle1->indice].edge1= edgeC;
-	theTriangulation->elem[triangle1->indice].edge2= &theTriangulation->edges[nEdge+1]; // TODO checker
+	theTriangulation->elem[triangle1->indice].edge2= &theTriangulation->edges[nEdge+1]; 
 		
 		
 	/* AJOUT DE 1 EDGE */
@@ -254,9 +250,6 @@ void AddPoint(Point *point, Triangulation *theTriangulation)// TODO ajouter les 
 	theTriangulation->edges[nEdge+1].P1=point_exterieur1;
 	theTriangulation->edges[nEdge+1].elem0=&theTriangulation->elem[nElem+1];
 	theTriangulation->edges[nEdge+1].elem1=&theTriangulation->elem[triangle1->indice];
-		
-		
-	// TODO vérifier que l'ordre des opérations pour les pointeurs est ok
 		
 	////////////////////// 3) scinder EdgeCentrale  /////////////////////////////
 		

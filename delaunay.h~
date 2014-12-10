@@ -22,9 +22,8 @@ double y;
 int indice;
 } Point; 
 
-
-
-typedef struct {
+typedef struct Triangle Triangle;
+struct Triangle {
 Point *sommet0;
 Point *sommet1;
 Point *sommet2;
@@ -32,7 +31,8 @@ struct Edge *edge0;
 struct Edge *edge1;
 struct Edge *edge2; 
 int indice; 
-} Triangle; 
+struct myLeaf *theLeaf;
+}; 
 
 typedef struct Edge Edge;
 struct Edge {
@@ -46,7 +46,7 @@ int indice;
 typedef struct myLeaf myLeaf;
 struct myLeaf{
 Triangle* theTriangle;
-myLeaf* theChildren;// sans le "struct" a cette ligne il met "unknown type myleaf ..". Encore ?
+myLeaf* theChildren;
 int nChildren;
 };
 
@@ -59,8 +59,9 @@ typedef struct {
   Triangle* elem;
   Edge*     edges;
   Point *points;
-  int nElem;// a tenir a jour
-  int nNode;// fixe des le debut, on compte pas les p-1 et p-2
+  int nElem;// nombre de triangle cree au total (on compte les detruits)
+  int nElemReal;// nombre de triangles sens enfants
+  int nNode;// fixe des le debut, on compte pas les p-1 et p-2 ATTENTION: on sait jamais dire combien de pts on été ajoutés ..
   int nEdge;// a tenir a jour
   myTree* theTree;
   Edge *edgeGlobal;
@@ -74,14 +75,14 @@ typedef struct {
 Triangulation      *triangulation(char *FileName, const char *ResultName);
 Triangulation      *TriangulationCreate(char *FileName);
 void                TriangulationWrite(const char *ResultName, Triangulation *theTriangulation);
+void                TriangulationWriteAll(const char *ResultName, Triangulation *theTriangulation);
 void                TriangulationFree(Triangulation *theTriangulation);
 
 void                findP0(Triangulation *theTriangulation);
-void                AddPoint(Point *point, Triangulation *theTriangulation, int i);
-int 		    IsLegal(Edge *edge, Triangulation *theTriangulation);
+void                AddPoint(Point *point, Triangulation *theTriangulation);
+int 		    IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);
-//void              PointLocate(Edge *edge,Triangle *trig,Point *point,Triangulation *theTriangulation, myLeaf *leaves);
-void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves, int i);
+void  		    PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves);
 int                *ComputeRandom(int n);
 
 

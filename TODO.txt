@@ -1,15 +1,16 @@
 TODO:
 
-vérifier que l'ordre des opérations pour les pointeurs est ok
 
-chekc ce qu'il faut et surtout, il faudra peut être descendre les trucs ajoutés dans la partie "si on est sur une edge"
-		 et en plus de cela avoir enregistré des pointeurs parce que j'utilise probablement des trucs qui ne sont plus ce qu'ils étaient au début (mis à jour ..)
+tester le SWITCH
 
 
 NOW:
  
-0) Mettre un pointeur vers les edges depuis les triangles 
-1) IsLegal et Legalize
+ - nElem est le nombre de trig qui existe et on existé (check)
+- adapter le plot et(2 fonctions): on boucle sur tous les triangles (aussi les détruits), et on plot que ceux dont la feuille n'a pas de feuille ;-)
 
-
+- on legalize :-)
+ 
+ 
+free le tree
 

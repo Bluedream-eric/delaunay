@@ -41,6 +41,7 @@ return theTriangulation;
 //TriangulationFree(theTriangulation);
 }
 /////////////////////////////////////////////////////////////////////////////////
+
 void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 {
 	theTriangulation->trigGlobal =NULL;
@@ -269,7 +270,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	theTriangulation->edges[nEdge+1].P1=point_exterieur1;
 	theTriangulation->edges[nEdge+1].elem0=&theTriangulation->elem[nElem+1];
 	theTriangulation->edges[nEdge+1].elem1=&theTriangulation->elem[nElem+3];
-				
+
 	////////////////////// 3) scinder EdgeCentrale  /////////////////////////////
 		
 	theTriangulation->edges[nEdge+2].indice=nEdge+2;

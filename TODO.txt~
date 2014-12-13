@@ -1,17 +1,18 @@
 TODO:
 
 
-tester le SWITCH
+tester le SWITCH et le mettre anti-horlogique s'il ne l'est pas
 
+Il semble que l'edge pointe toujours vers le triangle qui a disparu :-) elem1 de edge4 poointe vers un triangle 1 qui n'existe plus
 
 NOW:
  
  - nElem est le nombre de trig qui existe et on existé (check)
-- adapter le plot et(2 fonctions): on boucle sur tous les triangles (aussi les détruits), et on plot que ceux dont la feuille n'a pas de feuille ;-)
+- adapter le plot et(2 fonctions): on boucle sur tous les triangles (aussi les détruits), et on plot que ceux dont la feuille n'a pas de feuille ;-). je crois que le plot va devoir écrire les résultats contenus dans un fichier. C'est le plus simple pour faire une animation de tsunami. A chaque fois qu'on a ajouté un point, on écrit dans le fichier et on plot le fichier (like tsunami). Donc la fonciton qui calcule tout peut redevenir void, vu qu'a n'aura plus besoin de la struct triangulation pour faire le plot 
+
 
 - on legalize :-)
  
  
-PA doit 
--free son tree
+free le tree
 

@@ -1,8 +1,17 @@
 TODO:
 
+FROM 11==> GOOD:
+	on met tout dans le même sens anti? horlogique
+		d'abord ans le add et puis initialisation ?
+		(on a déjà corrigé le elem1 et elem0 à échanger)
+
+
+La 3ème point qu'il ajoute, il le met dans un triangle foireux alors qu'il est sur une edge.. A un moment il trouvait l'edge je crois.
+Donc il y a du avoir des chanegments qui font un peu planter le tree par exemple.. Car le mesh semble nickel avant cette étape là :-)
+Peut être vérifier qu'a un moment il trouvait bine l'edge et cela confirmerai ce que j'ai dis ci dessus.
+Dans la v11 il trouvaitla bonne edge mais elle référencait un triangle mort :-)
 
 - tester le SWITCH et le mettre anti-horlogique s'il ne l'est pas
-- quand on ajoute un poitnsur une edge, on a inversé elem0 et elem1 de edgeGlobal on dirait ..
 
 
 Il semble que l'edge pointe toujours vers le triangle qui a disparu :-) elem1 de edge4 poointe vers un triangle 1 qui n'existe plus

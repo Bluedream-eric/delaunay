@@ -19,19 +19,19 @@ int *random = ComputeRandom(theTriangulation->nNode-1);
 int i=0;
 for(i=0; i<theTriangulation->nNode; i++)
 {
-	//printf(" i= %d \n",i);
+    printf(" ajout du point number %d \n",i+1);
     AddPoint(&(theTriangulation->points[random[i]]), theTriangulation,i);
     if(i==3){break;}
 }
 
-/*printf("triangle 0: indice: %d \n",theTriangulation->elem[0].indice);
-printf("triangle 0: sommet0->indice: %d \n",theTriangulation->elem[0].sommet0->indice);
-printf("triangle 0: sommet1->indice: %d \n",theTriangulation->elem[0].sommet1->indice);
-printf("triangle 0: sommet2->indice: %d \n",theTriangulation->elem[0].sommet2->indice);
+/*printf("edge 3: indice: %d \n",theTriangulation->edges[3].indice);
+printf("edges 3: elem0->indice: %d \n",theTriangulation->edges[3].elem0->indice);
+printf("edges 3: elem1->indice: %d \n",theTriangulation->edges[3].elem1->indice);*/
 
-printf("triangle 0: edge0->indice: %d \n",theTriangulation->elem[0].edge0->indice);
-printf("triangle 0: edge1->indice: %d \n",theTriangulation->elem[0].edge1->indice);
-printf("triangle 0: edge2->indice: %d \n",theTriangulation->elem[0].edge2->indice);*/
+
+/*printf("triangle 7: edge0->indice: %d \n",theTriangulation->elem[7].edge0->indice);
+printf("triangle 7: edge1->indice: %d \n",theTriangulation->elem[7].edge1->indice);
+printf("triangle 7: edge2->indice: %d \n",theTriangulation->elem[7].edge2->indice);*/
 
 
 // TODO: RemoveExtraPoints (enlever les points -1 et -2 ainsi que les edges qui les touchent)
@@ -49,7 +49,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	int nEdge=theTriangulation->nEdge;
 	int nElem=theTriangulation->nElem;
 
-	PointLocate(point,theTriangulation,theTriangulation->theTree->theRoot); // TODO argument redondant :p
+	PointLocate(point,theTriangulation,theTriangulation->theTree->theRoot); 
 	
 	//if(theTriangulation->trigGlobal != NULL)
 	if(theTriangulation->edgeGlobal == NULL)// TODO check selon ce que PA fait :-)
@@ -427,7 +427,8 @@ if (leaves->theChildren != NULL) // not the real leaves: check child by child
 	for(i=0;i< leaves->nChildren;i++ )
 	{
 		if(withinTriangle(point,leaves->theChildren[i].theTriangle))
-		{
+		{	
+			printf("Le point %d est dans le fond du triangle %d\n",point->indice,leaves->theChildren[i].theTriangle->indice);
 			ind=i;	
 			break;
 		}
@@ -438,15 +439,19 @@ if (leaves->theChildren != NULL) // not the real leaves: check child by child
 	
 }
 else//theTriangulation->trigGlobal = leaves->theTriangle;
-{
+{	
+	printf("Le point %d est-il onside du triangle %d \n",point->indice,leaves->theTriangle->indice);
 	onSide(point,leaves->theTriangle,theTriangulation); 
 }
 }
 
 int withinTriangle(Point *point,Triangle *triangle)
 {
-return ( fabs(triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2))) == ( fabs(triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) )+ fabs(triArea(*point,*(triangle->sommet1),*(triangle->sommet2)) )+ fabs(triArea(*point,*(triangle->sommet1),*(triangle->sommet2)) ) ) );
-//return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) )== ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*point) )+ fabs( triArea(*(triangle->sommet1),*(triangle->sommet2),*point) )+ fabs( triArea(*(triangle->sommet1),*(triangle->sommet2),*point) )) );
+return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) - ( triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) + triArea(*point,*(triangle->sommet1),*(triangle->sommet2))+ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    )  <= 0.0  );
+
+
+
+//return (  triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) == ( triArea(*(triangle->sommet0),*(triangle->sommet1),*point) + triArea(*(triangle->sommet1),*(triangle->sommet2),*point) + triArea(*(triangle->sommet1),*(triangle->sommet2),*point) )) ;
 }
 
 //---------------
@@ -462,7 +467,7 @@ double crossProd(Point point0, Point point1, Point point2)
 ///////////////////////////////
 double triArea(Point point0, Point point1, Point point2)
 {
-	return (crossProd(point0,point1,point2)/2);
+	return (fabs(crossProd(point0,point1,point2)/2));
 }
 /////////////////////////////////////////////////////////
 void onSide(Point *point, Triangle *triangle,Triangulation *theTriangulation)
@@ -752,7 +757,7 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->edges = malloc(sizeof(Edge)*(3*nNode -3));
     
     
-    // TODO traiter p-1 et p-2 de manière symbolique 
+    // TODO initialiser p-1 et p-2 en fonction des données
 	
 	// init p-1 en (0.0 ,-1.0)
 	theTriangulation->points[nNode].x= 0.0;
@@ -764,7 +769,9 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
 	theTriangulation->points[nNode+1].y= 10.0;
 	theTriangulation->points[nNode+1].indice=nNode+1;
 	
-	/* Anti-horlogique (ce qui devrait être bon mais ne va pas du tout)
+	
+	
+	// Anti-horlogique 
 	// init le triangle[0]	
 	theTriangulation->elem[0].indice= 0;
 	theTriangulation->elem[0].sommet0= &theTriangulation->points[0];     // pointe vers p0;
@@ -775,25 +782,27 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
 	theTriangulation->elem[0].edge2 = &theTriangulation->edges[2]; 
 
     // initialiser les 3 first edges:     
-    theTriangulation->edges[0].indice=0;//va de p0 à p-1
+    theTriangulation->edges[0].indice=0;
     theTriangulation->edges[0].elem0=&theTriangulation->elem[0];
     theTriangulation->edges[0].elem1=NULL;
     theTriangulation->edges[0].P0=&theTriangulation->points[0];
     theTriangulation->edges[0].P1=&theTriangulation->points[nNode+1];
 
-    theTriangulation->edges[1].indice=1;// va de p-1 à p-2
+    theTriangulation->edges[1].indice=1;
     theTriangulation->edges[1].elem0=&theTriangulation->elem[0];
     theTriangulation->edges[1].elem1=NULL;
     theTriangulation->edges[1].P0=&theTriangulation->points[nNode+1];
     theTriangulation->edges[1].P1=&theTriangulation->points[nNode];
 
-    theTriangulation->edges[2].indice=2;// va de p-2 à 0
+    theTriangulation->edges[2].indice=2;
     theTriangulation->edges[2].elem0=&theTriangulation->elem[0];
     theTriangulation->edges[2].elem1=NULL;
     theTriangulation->edges[2].P0=&theTriangulation->points[nNode];
-    theTriangulation->edges[2].P1=&theTriangulation->points[0]; */ // FIN de anti-horlogique
+    theTriangulation->edges[2].P1=&theTriangulation->points[0];  // FIN de anti-horlogique
+    								
     
-    // Horlogique (je comprend pas trop pourquoi ça "marche")
+    /*
+    // Horlogique 
     // init le triangle[0]	
 	theTriangulation->elem[0].indice= 0;
 	theTriangulation->elem[0].sommet0= &theTriangulation->points[0];     // pointe vers p0;
@@ -805,24 +814,29 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
 
     // initialiser les 3 first edges:     
     theTriangulation->edges[0].indice=0;//va de p0 à p-1
-    theTriangulation->edges[0].elem0=&theTriangulation->elem[0];
-    theTriangulation->edges[0].elem1=NULL;
+    //theTriangulation->edges[0].elem0=&theTriangulation->elem[0];
+    //theTriangulation->edges[0].elem1=NULL;
+    theTriangulation->edges[0].elem0=NULL;
+    theTriangulation->edges[0].elem1=&theTriangulation->elem[0];
     theTriangulation->edges[0].P0=&theTriangulation->points[0];
     theTriangulation->edges[0].P1=&theTriangulation->points[nNode];
 
     theTriangulation->edges[1].indice=1;// va de p-1 à p-2
-    theTriangulation->edges[1].elem0=&theTriangulation->elem[0];
-    theTriangulation->edges[1].elem1=NULL;
+    //theTriangulation->edges[1].elem0=&theTriangulation->elem[0];
+     //theTriangulation->edges[1].elem1=NULL;
+    theTriangulation->edges[1].elem0=NULL;
+    theTriangulation->edges[1].elem1=&theTriangulation->elem[0];
     theTriangulation->edges[1].P0=&theTriangulation->points[nNode];
     theTriangulation->edges[1].P1=&theTriangulation->points[nNode+1];
 
-
     theTriangulation->edges[2].indice=2;// va de p-2 à 0
-    theTriangulation->edges[2].elem0=&theTriangulation->elem[0];
-    theTriangulation->edges[2].elem1=NULL;
+//    theTriangulation->edges[2].elem0=&theTriangulation->elem[0];
+  //  theTriangulation->edges[2].elem1=NULL;
+    theTriangulation->edges[2].elem0=NULL;
+    theTriangulation->edges[2].elem1=&theTriangulation->elem[0];
     theTriangulation->edges[2].P0=&theTriangulation->points[nNode+1];
     theTriangulation->edges[2].P1=&theTriangulation->points[0];
-    
+    								*/
     theTriangulation->nEdge=3;
     
        // tree initialization
@@ -832,7 +846,7 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
      triangleZero->nChildren = 0;
      theTriangulation->theTree = malloc(sizeof(myTree*));
      theTriangulation->theTree->theRoot = triangleZero;    
-     theTriangulation->elem[0].theLeaf=theTriangulation->theTree->theRoot;// TODO check
+     theTriangulation->elem[0].theLeaf=theTriangulation->theTree->theRoot;
     fclose(file);
     
     return theTriangulation;

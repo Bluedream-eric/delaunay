@@ -801,42 +801,7 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->edges[2].P1=&theTriangulation->points[0];  // FIN de anti-horlogique
     								
     
-    /*
-    // Horlogique 
-    // init le triangle[0]	
-	theTriangulation->elem[0].indice= 0;
-	theTriangulation->elem[0].sommet0= &theTriangulation->points[0];     // pointe vers p0;
-	theTriangulation->elem[0].sommet1= &theTriangulation->points[nNode];
-	theTriangulation->elem[0].sommet2= &theTriangulation->points[nNode+1];
-	theTriangulation->elem[0].edge0 = &theTriangulation->edges[0];
-	theTriangulation->elem[0].edge1 = &theTriangulation->edges[1];
-	theTriangulation->elem[0].edge2 = &theTriangulation->edges[2]; 
-
-    // initialiser les 3 first edges:     
-    theTriangulation->edges[0].indice=0;//va de p0 à p-1
-    //theTriangulation->edges[0].elem0=&theTriangulation->elem[0];
-    //theTriangulation->edges[0].elem1=NULL;
-    theTriangulation->edges[0].elem0=NULL;
-    theTriangulation->edges[0].elem1=&theTriangulation->elem[0];
-    theTriangulation->edges[0].P0=&theTriangulation->points[0];
-    theTriangulation->edges[0].P1=&theTriangulation->points[nNode];
-
-    theTriangulation->edges[1].indice=1;// va de p-1 à p-2
-    //theTriangulation->edges[1].elem0=&theTriangulation->elem[0];
-     //theTriangulation->edges[1].elem1=NULL;
-    theTriangulation->edges[1].elem0=NULL;
-    theTriangulation->edges[1].elem1=&theTriangulation->elem[0];
-    theTriangulation->edges[1].P0=&theTriangulation->points[nNode];
-    theTriangulation->edges[1].P1=&theTriangulation->points[nNode+1];
-
-    theTriangulation->edges[2].indice=2;// va de p-2 à 0
-//    theTriangulation->edges[2].elem0=&theTriangulation->elem[0];
-  //  theTriangulation->edges[2].elem1=NULL;
-    theTriangulation->edges[2].elem0=NULL;
-    theTriangulation->edges[2].elem1=&theTriangulation->elem[0];
-    theTriangulation->edges[2].P0=&theTriangulation->points[nNode+1];
-    theTriangulation->edges[2].P1=&theTriangulation->points[0];
-    								*/
+    
     theTriangulation->nEdge=3;
     
        // tree initialization

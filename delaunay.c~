@@ -447,7 +447,7 @@ else//theTriangulation->trigGlobal = leaves->theTriangle;
 
 int withinTriangle(Point *point,Triangle *triangle)
 {
-return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) - ( triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) + triArea(*point,*(triangle->sommet1),*(triangle->sommet2))+ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    )  <= 0.1  );
+return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) - ( triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) + triArea(*point,*(triangle->sommet1),*(triangle->sommet2))+ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    )  <= 0.0  );
 
 
 

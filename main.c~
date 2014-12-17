@@ -1,33 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include "glfem.h"
 
 
-Triangulation *triangulation(char *FileName, const char *ResultName);
-void test(int n);
+int triangulation(char *FileName, const char *ResultName, const char *PlotName);
 
 int main(void)
 {   
 		//test(42);
 		char *FileName="data_new.txt";
-		//struct timespec start, finish;
-		//double elapsed;
-		char *ResultName="solution";
+		struct timespec start, finish;
+		double elapsed;
+		char *ResultName="solution.txt";
+		char *PlotName="solutionPlot.txt";
 				
-		//clock_gettime(CLOCK_MONOTONIC, &start);
 		
-		Triangulation *theTriangulation= triangulation(FileName, ResultName);
-
-		 glfemInit("Delaunay");
+		int nPrint = triangulation(FileName, ResultName,PlotName);
+		//double elapsed, start, finish;
+    		int iter=0;
+		glfemInit("Delaunay");
+    		clock_gettime(CLOCK_MONOTONIC, &start);
+    		do
+    		{ 
+    		clock_gettime(CLOCK_MONOTONIC, &finish);
+    		elapsed=(finish.tv_sec - start.tv_sec);
+    		printf("%f \n",floor(elapsed));
+    	    const char *basename = "%s-%08d.txt";
+            char filename[256];
+    	    sprintf(filename,basename,PlotName,(int)floor(elapsed));
+    		    		
+int w,h;
+        glfwGetWindowSize(&w,&h);
+        glfemReshapeWindows(filename,w,h);
+        glfemPlotMesh(filename);// file name va chercher le fichier à lire mnt
+        glfwSwapBuffers();    		
+    		iter++;
+    		}
+    	while( glfwGetKey(GLFW_KEY_ESC) != GLFW_PRESS &&
+   		        glfwGetWindowParam(GLFW_OPENED) && elapsed <=nPrint-2);
     do
     {
         int w,h;
         glfwGetWindowSize(&w,&h);
-        glfemReshapeWindows(theTriangulation,w,h);
-        glfemPlotMesh(theTriangulation); 
+        glfemReshapeWindows(PlotName,w,h);
+        glfemPlotMesh(PlotName);// je crois que la fonction PlotMesh va prendre en argument PlotName pour aller lire dedans:-) 
         glfwSwapBuffers();
-    } 
+    }
     while( glfwGetKey(GLFW_KEY_ESC) != GLFW_PRESS &&
            glfwGetWindowParam(GLFW_OPENED) );
            
@@ -35,7 +55,7 @@ int main(void)
     glfwTerminate(); 
     
     
-		//clock_gettime(CLOCK_MONOTONIC, &finish);
+		
 /* 
 		elapsed = (finish.tv_sec - start.tv_sec);
 		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;

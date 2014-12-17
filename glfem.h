@@ -20,9 +20,9 @@ void glfemDrawColorElement(float *x, float *y, double *u, int n);
 void glfemDrawElement(float *x, float *y, int n);
 void glfemDrawNodes(double* x, double* y,int n);
 
-void glfemReshapeWindows(Triangulation *theTriangulation, int width, int heigh);
-//void glfemPlotField(femMesh *theMesh, double *u);
-void glfemPlotMesh(Triangulation *theTriangulation);
+void glfemReshapeWindows(const char *PlotName, int width, int heigh);
+//void glfemPlotField(femMesh *theMesh, double *u); ON UTILISE PAS
+void glfemPlotMesh(const char *PlotName);
 void glfemMessage(char *message);
 
 void glfemDrawMessage(int h, int v, char *message);

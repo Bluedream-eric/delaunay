@@ -1,28 +1,28 @@
 TODO:
 
-FROM 11==> GOOD:
-	on met tout dans le même sens anti? horlogique
-		d'abord ans le add et puis initialisation ?
 
 
-La 3ème point qu'il ajoute, il le met dans un triangle foireux alors qu'il est sur une edge.. A un moment il trouvait l'edge je crois.
-Donc il y a du avoir des chanegments qui font un peu planter le tree par exemple.. Car le mesh semble nickel avant cette étape là :-)
-Peut être vérifier qu'a un moment il trouvait bine l'edge et cela confirmerai ce que j'ai dis ci dessus.
-Dans la v11 il trouvaitla bonne edge mais elle référencait un triangle mort :-)
+LES LEAFS DANS LE FLIP :En fait c'est chaud car le triangle 026 n'est plus la mother des trois qu'on vient de créer et dont un a été détruit
+	semble ok à part que maintean tavec le double pointeur, il faut un double pointeur dans l'autre sens, un triangle devrait référencer plusieurs leaf, et ça c'est pas possible pour l'instant :/
+	
+-removeBorder (elle doit mettre à jour des trucs genre nEdge etc pour que les write fonctionne nickel après son éventuelle utilisation!)
+	pour enlever les 3 sommets on fait juste theTrianglation->nNode= nNode -3; et il n'y touchera plus vu que c'est les 3 derniers
+	(vérifier que c'est ok avec les write et tout ça ..)
+	pour enleverles edges, on boucle sur les edges si un des P0 ou P1 est p*, p-1 ou p-2, on doit enlever l'edge (c'est peut être 
+		mini tricky pour pas faire du On^2, donc retenir combien d'edges ont été supprimée d'ici là pour reculer du bon 
+		nombre de places quand on parcourt (une seule fois !) la liste d'edges. (looks like un HK d'elfi l'an passé) :-)
 
-- tester le SWITCH et le mettre anti-horlogique s'il ne l'est pas
+-compute random
+		
+-  PA ? régler le compte à p-1-2
+-  quand on dessine, commencer par triangle0 tout mesh et à la dernière étape on enlève le trig extérieur (joli de voir cela :-)
+- curiseuse SEG FAULT dans le print avec les edges, cela semble lié au fait qu'il print l'edge qui est partie dans le switch ou
+	à la différence entre print et printAll, pas un big deal :-)
 
 
-Il semble que l'edge pointe toujours vers le triangle qui a disparu :-) elem1 de edge4 poointe vers un triangle 1 qui n'existe plus
 
 NOW:
- 
- - nElem est le nombre de trig qui existe et on existé (check)
-- adapter le plot et(2 fonctions): on boucle sur tous les triangles (aussi les détruits), et on plot que ceux dont la feuille n'a pas de feuille ;-). je crois que le plot va devoir écrire les résultats contenus dans un fichier. C'est le plus simple pour faire une animation de tsunami. A chaque fois qu'on a ajouté un point, on écrit dans le fichier et on plot le fichier (like tsunami). Donc la fonciton qui calcule tout peut redevenir void, vu qu'a n'aura plus besoin de la struct triangulation pour faire le plot 
-
-
-- on legalize :-)
- 
- 
-free le tree
+  
+ LIST:
+-free le tree 
 

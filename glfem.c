@@ -250,20 +250,40 @@ void glfemDrawElement(float *x, float *y, int n)
 
 }
 
-void glfemReshapeWindows(Triangulation *theTriangulation, int w, int h)
+void glfemReshapeWindows(const char *PlotName, int w, int h)
 {
-    /*double minX  = femMin(theMesh->X,theMesh->nNode);
-    double maxX  = femMax(theMesh->X,theMesh->nNode);
-    double minY  = femMin(theMesh->Y,theMesh->nNode);
-    double maxY  = femMax(theMesh->Y,theMesh->nNode);*/
-    double minX =-10.0;
-    double maxX = 2.0;
-    double minY = -1.0;
-    double maxY = 10.0;
-    // TODO il suffit de trouver les min et max en X et Y (en soit 
-    // c'est notre big triangle). Et on fait déjà ça pour findP0 plus ou moins :-)
-    // ce truc est provisoire 
-    
+	// TODO  lire fichier pour trouver les dimensions max
+           
+	float  xLoc[3];
+	float  yLoc[3];
+	double xMinLoc;
+	double xMaxLoc;
+	double yMinLoc;
+	double yMaxLoc;
+	
+	int i,trash,trashInd;
+	int nElem=0;
+        FILE* file = fopen(PlotName,"r");
+        trash = fscanf(file, "Number of triangles %d \n", &nElem);
+        trash = fscanf(file,"%d : %f %f %f %f %f %f \n",&trashInd,&xLoc[0],&xLoc[1],&xLoc[2],&yLoc[0],&yLoc[1],&yLoc[2]);
+        double maxX=fmax(xLoc[0],fmax(xLoc[1],xLoc[2]));
+        double minX=fmin(xLoc[0],fmin(xLoc[1],xLoc[2]));
+        double maxY=fmax(yLoc[0],fmax(yLoc[1],yLoc[2]));
+        double minY=fmin(yLoc[0],fmin(yLoc[1],yLoc[2]));
+        for (i = 1; i < nElem; i++)
+        {	
+    		trash = fscanf(file,"%d : %f %f %f %f %f %f \n",&trashInd,&xLoc[0],&xLoc[1],&xLoc[2],&yLoc[0],&yLoc[1],&yLoc[2]);
+    		xMaxLoc=fmax(xLoc[0],fmax(xLoc[1],xLoc[2]));
+    		xMinLoc=fmin(xLoc[0],fmin(xLoc[1],xLoc[2]));
+    		yMaxLoc=fmax(yLoc[0],fmax(yLoc[1],yLoc[2]));
+    		yMinLoc=fmin(yLoc[0],fmin(yLoc[1],yLoc[2]));
+    		if (maxX<xMaxLoc) maxX=xMaxLoc;
+    		if (xMinLoc<minX) minX=xMinLoc;
+    		if (maxY<yMaxLoc) maxY=yMaxLoc;
+    		if (yMinLoc<minY) minY=yMinLoc;    
+        }
+        fclose(file);
+        
     double sizeX = (maxX-minX)/1.9;
     double meanX = (maxX+minX)/2.0; 
     double sizeY = (maxY-minY)/1.9;
@@ -309,13 +329,30 @@ void glfemReshapeWindows(Triangulation *theTriangulation, int w, int h)
     glfemPlotMesh(theMesh);
 }*/
 
-void glfemPlotMesh(Triangulation *theTriangulation)
+void glfemPlotMesh(const char *PlotName)
+{
+	int nLocalNode = 3;
+	float  xLoc[nLocalNode];
+	float  yLoc[nLocalNode];
+
+	int i,trash,trashInd;
+	int nElem=0;
+        FILE* file = fopen(PlotName,"r");
+        trash = fscanf(file, "Number of triangles %d \n", &nElem);
+       // glfemDrawElement(xLoc,yLoc,nLocalNode);
+        for (i = 0; i < nElem; i++)
+        {	
+    		trash = fscanf(file,"%d : %f %f %f %f %f %f \n",&trashInd,&xLoc[0],&xLoc[1],&xLoc[2],&yLoc[0],&yLoc[1],&yLoc[2]);
+    		glfemDrawElement(xLoc,yLoc,nLocalNode);
+        }
+        fclose(file);
+}
+/*void glfemPlotMesh(Triangulation *theTriangulation)
 {					
     int i;
     int nLocalNode = 3;
     float  xLoc[nLocalNode];
     float  yLoc[nLocalNode];
-
     for (i = 0; i < theTriangulation->nElem; ++i) {
             xLoc[0] =theTriangulation->elem[i].sommet0->x;
             xLoc[1]=theTriangulation->elem[i].sommet1->x;
@@ -324,7 +361,7 @@ void glfemPlotMesh(Triangulation *theTriangulation)
             yLoc[1]=theTriangulation->elem[i].sommet1->y;
             yLoc[2]=theTriangulation->elem[i].sommet2->y;
             glfemDrawElement(xLoc,yLoc,nLocalNode); }
-}
+}*/
 
 void glfemMessage(char *message)
 {

@@ -51,7 +51,6 @@ int nChildren;
 };
 
 typedef struct {
-  //myLeaf theRoot;
   myLeaf* theRoot;
 } myTree;
 
@@ -61,7 +60,7 @@ typedef struct {
   Point *points;
   int nElem;// nombre de triangle cree au total (on compte les detruits)
   int nElemReal;// nombre de triangles sans enfants
-  int nNode;// fixe des le debut, on compte pas les p-1 et p-2 ATTENTION: on sait jamais dire combien de pts on été ajoutés ..
+  int nNode;// ATTENTION: on sait jamais dire combien de pts on été ajoutés ..
   int nEdge;// a tenir a jour
   myTree* theTree;
   Edge *edgeGlobal;
@@ -77,9 +76,10 @@ void                TriangulationWrite(const char *ResultName, Triangulation *th
 void                TriangulationWriteAll(const char *ResultName, Triangulation *theTriangulation);
 void 		    TriangulationWritePlot(const char *PlotName,Triangulation *theTriangulation);
 void		    TriangulationWriteIter(const char *PlotName,Triangulation *theTriangulation, int iter);
+void                TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation);
 void                TriangulationFree(Triangulation *theTriangulation);
 
-void                findP0(Triangulation *theTriangulation);
+//void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation,int i);
 int 		    IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);

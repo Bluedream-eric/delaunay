@@ -10,7 +10,8 @@ int triangulation(char *FileName, const char *ResultName, const char *PlotName);
 int main(void)
 {   
 		//test(42);
-		char *FileName="data_new.txt";
+		//char *FileName="data_new.txt";
+		char *FileName="data_randomGrid.txt";
 		struct timespec start, finish;
 		double elapsed;
 		char *ResultName="solution.txt";
@@ -25,7 +26,7 @@ int main(void)
     		{ 
     		clock_gettime(CLOCK_MONOTONIC, &finish);
     		elapsed=(finish.tv_sec - start.tv_sec);
-    		printf("%f \n",floor(elapsed));
+    		//printf("%f \n",floor(elapsed));
     	    const char *basename = "%s-%08d.txt";
             char filename[256];
     	    sprintf(filename,basename,PlotName,(int)floor(elapsed));

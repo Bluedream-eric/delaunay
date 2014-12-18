@@ -1,28 +1,17 @@
 TODO:
 
+-) 2 foncitons main pour séparer graphiques et calcul
+-) compute random
+-) free le tree 
+-) legalize recursif ....
 
+
+ATTENTION: il y avait peut être des endroits où on faisait des test sur les deux nodes extérieurs, maintenant il y en a trois !!!!
+			en tout cas dans le isLegal: les 3 pts sont désormais en dehors de tout cercle :-)
 
 LES LEAFS DANS LE FLIP :En fait c'est chaud car le triangle 026 n'est plus la mother des trois qu'on vient de créer et dont un a été détruit
-	semble ok à part que maintean tavec le double pointeur, il faut un double pointeur dans l'autre sens, un triangle devrait référencer plusieurs leaf, et ça c'est pas possible pour l'instant :/
+	semble ok à part que maintean tavec le double pointeur, il faut un double pointeur dans l'autre sens, un triangle devrait référencer 
+	plusieurs leaf, et ça c'est pas possible pour l'instant :/
+	SOLUTION: Il faut que les child des deux triangles pointent vers l'unique mémoire de la leaf du petit triangle.  
 	
--removeBorder (elle doit mettre à jour des trucs genre nEdge etc pour que les write fonctionne nickel après son éventuelle utilisation!)
-	pour enlever les 3 sommets on fait juste theTrianglation->nNode= nNode -3; et il n'y touchera plus vu que c'est les 3 derniers
-	(vérifier que c'est ok avec les write et tout ça ..)
-	pour enleverles edges, on boucle sur les edges si un des P0 ou P1 est p*, p-1 ou p-2, on doit enlever l'edge (c'est peut être 
-		mini tricky pour pas faire du On^2, donc retenir combien d'edges ont été supprimée d'ici là pour reculer du bon 
-		nombre de places quand on parcourt (une seule fois !) la liste d'edges. (looks like un HK d'elfi l'an passé) :-)
-
--compute random
-		
--  PA ? régler le compte à p-1-2
--  quand on dessine, commencer par triangle0 tout mesh et à la dernière étape on enlève le trig extérieur (joli de voir cela :-)
-- curiseuse SEG FAULT dans le print avec les edges, cela semble lié au fait qu'il print l'edge qui est partie dans le switch ou
-	à la différence entre print et printAll, pas un big deal :-)
-
-
-
-NOW:
-  
- LIST:
--free le tree 
 

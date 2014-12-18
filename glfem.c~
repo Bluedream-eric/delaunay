@@ -253,11 +253,7 @@ void glfemDrawElement(float *x, float *y, int n)
 void glfemReshapeWindows(const char *PlotName, int w, int h)
 {
 	// TODO  lire fichier pour trouver les dimensions max
-        /*double minX =-10.0;
-        double maxX = 2.0;
-        double minY = -1.0;
-        double maxY = 10.0;*/
-    
+           
 	float  xLoc[3];
 	float  yLoc[3];
 	double xMinLoc;

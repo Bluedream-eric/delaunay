@@ -46,12 +46,11 @@ int indice;
 typedef struct myLeaf myLeaf;
 struct myLeaf{
 Triangle* theTriangle;
-myLeaf* theChildren;
+myLeaf* theChildren;// tableau de Leaf
 int nChildren;
 };
 
 typedef struct {
-  //myLeaf theRoot;
   myLeaf* theRoot;
 } myTree;
 
@@ -77,9 +76,10 @@ void                TriangulationWrite(const char *ResultName, Triangulation *th
 void                TriangulationWriteAll(const char *ResultName, Triangulation *theTriangulation);
 void 		    TriangulationWritePlot(const char *PlotName,Triangulation *theTriangulation);
 void		    TriangulationWriteIter(const char *PlotName,Triangulation *theTriangulation, int iter);
+void                TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation);
 void                TriangulationFree(Triangulation *theTriangulation);
 
-void                findP0(Triangulation *theTriangulation);
+//void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation,int i);
 int 		    IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation);
 void                LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation);

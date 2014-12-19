@@ -4,6 +4,7 @@
 #include <math.h>
 #include "glfem.h"
 
+#define GRAPHICS
 
 int triangulation(char *FileName, const char *ResultName, const char *PlotName);
 
@@ -20,6 +21,9 @@ int main(void)
 		
 		int nPrint = triangulation(FileName, ResultName,PlotName);
     		int iter=0;
+		
+		#ifdef GRAPHICS 
+		
 		glfemInit("Delaunay");
     		clock_gettime(CLOCK_MONOTONIC, &start);
     		do
@@ -55,7 +59,7 @@ int w,h;
     glfwTerminate(); 
     
     
-		
+		#endif
 /* 
 		elapsed = (finish.tv_sec - start.tv_sec);
 		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;

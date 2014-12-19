@@ -21,6 +21,7 @@ for(i=0; i<theTriangulation->nNode; i++)
     AddPoint(&(theTriangulation->points[random[i]]), theTriangulation,i);// TODO remettre le random apres
     //AddPoint(&(theTriangulation->points[i]), theTriangulation,i);
     TriangulationWriteIter(PlotName,theTriangulation, i+1);
+    //if(i==22)    break;
 }
 
 /*printf("edge 12: indice: %d \n",theTriangulation->edges[12].indice);
@@ -48,7 +49,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	int nEdge=theTriangulation->nEdge;
 	int nElem=theTriangulation->nElem;
 
-	printf("the root triangle indice : %d \n",theTriangulation->theTree->theRoot->theTriangle->indice);// TODO il y avait un prob 
+	//printf("the root triangle indice : %d \n",theTriangulation->theTree->theRoot->theTriangle->indice);// TODO il y avait un prob 
 	printf(" ajout du point number %d en (%f,%f)\n",i,point->x,point->y);// grave de localisation sur le fichier test de base..
 	PointLocate(point,theTriangulation,theTriangulation->theTree->theRoot); 
 	
@@ -276,7 +277,8 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	{
 		edgeD=triangle0->edge2;
 	}
-	if (edgeC->indice != theTriangulation->edgeGlobal->P1->indice && edgeC->indice != theTriangulation->edgeGlobal->P1->indice)		
+	//if (edgeC->indice != theTriangulation->edgeGlobal->P1->indice && edgeC->indice != theTriangulation->edgeGlobal->P1->indice)		// TODO on compare des indices de node et de edge :D <3 chekc que c'est ok mnt
+	if (edgeC->P0->indice != theTriangulation->edgeGlobal->P1->indice && edgeC->P1->indice != theTriangulation->edgeGlobal->P1->indice)
 	{
 	Edge *trashh = edgeC;
 	edgeC = edgeD;
@@ -396,7 +398,7 @@ int IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation
 	double Rayon =   (sqrt((Ax-Bx)*(Ax-Bx) + (Ay-By)*(Ay-By)))
 			*(sqrt((Ax-Cx)*(Ax-Cx) + (Ay-Cy)*(Ay-Cy)))
 			*(sqrt((Bx-Cx)*(Bx-Cx) + (By-Cy)*(By-Cy)))/(4*triArea(*(edge->P0),*(edge->P1),*point));
-	if (sqrt((centreX-(PK->x))*(centreX-(PK->x)) + (centreY-(PK->y))*(centreY-(PK->y))) >=0.7*Rayon)
+	if (sqrt((centreX-(PK->x))*(centreX-(PK->x)) + (centreY-(PK->y))*(centreY-(PK->y))) >=0.9999999*Rayon)
 	{	
 		 return 1; // c'est legal
 	} 
@@ -410,11 +412,12 @@ int IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation
 
 void PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves)
 { 
-printf("bool= %d \n ",leaves->theChildren != NULL);
+//printf("bool= %d \n ",leaves->theChildren != NULL);
 if (leaves->theChildren != NULL) // not the real leaves: check child by child
 {
 	int i = 0;
-	int ind=0;
+	//int ind=0;
+	int ind=-1;
 	for(i=0;i< leaves->nChildren;i++ )
 	{
 		/*if (leaves->theChildren[i].theTriangle->indice ==3)
@@ -427,25 +430,28 @@ if (leaves->theChildren != NULL) // not the real leaves: check child by child
 		
 		if(withinTriangle(point,leaves->theChildren[i].theTriangle))
 		{	
-			printf("Le point %d est dans le fond du triangle %d\n",point->indice,leaves->theChildren[i].theTriangle->indice);
+			//printf("Le point %d est dans le fond du triangle %d\n",point->indice,leaves->theChildren[i].theTriangle->indice);
 			ind=i;	
 			break;
 		}
 	}
+	if (ind==-1) printf(" ALERTE il n'est dans aucun triangle \n");
 	PointLocate(point,theTriangulation,&(leaves->theChildren[ind]));
 	//while (!(withinTriangle(point,leaves->theChildren[i].theTriangle)) && (i < leaves->nChildren))
 	//{i++;} // si tu regarde bien la condition elle fait d'office une seg fault quand i==nChildren :D	
 }
 else//theTriangulation->trigGlobal = leaves->theTriangle;
 {	
-	printf("Le point %d est-il onside du triangle %d \n",point->indice,leaves->theTriangle->indice);
+	//printf("Le point %d est-il onside du triangle %d \n",point->indice,leaves->theTriangle->indice);
 	onSide(point,leaves->theTriangle,theTriangulation); 
 }
 }
 
 int withinTriangle(Point *point,Triangle *triangle)
 {
-return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) - ( triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) + triArea(*point,*(triangle->sommet1),*(triangle->sommet2))+ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    )  <= 0.0000001 );
+return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) - 
+( triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) + triArea(*point,*(triangle->sommet1),*(triangle->sommet2))
++ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    )  <= 0.01 );// <= 0.0000001 );
 
 }
 
@@ -595,10 +601,59 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 			edgeD=triFront->edge0;
 		}
 		else{edgeD=triFront->edge1;}
-	}// TODO relire le chopage des edges ABCD
+	}// TODO relire le chopage des edges ABCD: il existe 2 sens, peut poser un prblm par après ?
 	
 	
-	// TODO leaf a check
+	// les 2 nouveaux triangles
+	if (triBack->indice == edge->elem1->indice)
+	{
+	theTriangulation->elem[theTriangulation->nElem].indice=theTriangulation->nElem;
+	theTriangulation->elem[theTriangulation->nElem].sommet0=point;
+	theTriangulation->elem[theTriangulation->nElem].sommet1=PK;
+	theTriangulation->elem[theTriangulation->nElem].sommet2=edge->P1;
+	theTriangulation->elem[theTriangulation->nElem].edge0= &theTriangulation->edges[edge->indice];// normalement on peut mettre ca
+	theTriangulation->elem[theTriangulation->nElem].edge1= edgeA;
+	theTriangulation->elem[theTriangulation->nElem].edge2= edgeB;
+	theTriangulation->elem[theTriangulation->nElem+1].indice=theTriangulation->nElem+1;
+	theTriangulation->elem[theTriangulation->nElem+1].sommet0=point;
+	theTriangulation->elem[theTriangulation->nElem+1].sommet1=edge->P0;
+	theTriangulation->elem[theTriangulation->nElem+1].sommet2=PK;
+	theTriangulation->elem[theTriangulation->nElem+1].edge0= edgeD;
+	theTriangulation->elem[theTriangulation->nElem+1].edge1= edgeC;
+	theTriangulation->elem[theTriangulation->nElem+1].edge2= &theTriangulation->edges[edge->indice];// avant "edge qui flip" ca change rien
+	}
+	else if(triBack->indice == edge->elem0->indice)
+	{
+	theTriangulation->elem[theTriangulation->nElem].indice=theTriangulation->nElem;
+	theTriangulation->elem[theTriangulation->nElem].sommet0=point;
+	theTriangulation->elem[theTriangulation->nElem].sommet1=edge->P1;
+	theTriangulation->elem[theTriangulation->nElem].sommet2=PK;
+	theTriangulation->elem[theTriangulation->nElem].edge0=edgeB;
+	theTriangulation->elem[theTriangulation->nElem].edge1=edgeA;
+	theTriangulation->elem[theTriangulation->nElem].edge2=&theTriangulation->edges[edge->indice];
+	theTriangulation->elem[theTriangulation->nElem+1].indice=theTriangulation->nElem+1;
+	theTriangulation->elem[theTriangulation->nElem+1].sommet0=point;
+	theTriangulation->elem[theTriangulation->nElem+1].sommet1=PK;
+	theTriangulation->elem[theTriangulation->nElem+1].sommet2=edge->P0;
+	theTriangulation->elem[theTriangulation->nElem+1].edge0=&theTriangulation->edges[edge->indice];
+	theTriangulation->elem[theTriangulation->nElem+1].edge1=edgeC;
+	theTriangulation->elem[theTriangulation->nElem+1].edge2=edgeD;
+	}
+	else printf("ERROR: NE DEVRAIT JAMAIS ETRE PRINTEEEEEEEEEEE \n");
+
+	int BackIs1;
+	if (triBack->indice == edge->elem1->indice) BackIs1=1;
+	else BackIs1=0;
+		
+	// l'edge qui flip
+	theTriangulation->edges[edge->indice].P0=point;
+	theTriangulation->edges[edge->indice].P1=PK;
+	theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[theTriangulation->nElem];
+	theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[theTriangulation->nElem+1];
+	//theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[edge->elem0->indice];// SEMBLE FAUX !! 
+	//theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[edge->elem1->indice];// TODO check
+		
+	// TODO leaf to check
 	triBack->theLeaf->nChildren=2;
 	triBack->theLeaf->theChildren=malloc(2*sizeof(myLeaf));
 	triBack->theLeaf->theChildren[0].theTriangle=&theTriangulation->elem[theTriangulation->nElem];
@@ -625,32 +680,10 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	//	feuille.. a voir ..
 	*/
 	
-	// les sommets des 2 nouveaux triangles
-	theTriangulation->elem[theTriangulation->nElem].indice=theTriangulation->nElem;
-	theTriangulation->elem[theTriangulation->nElem].sommet0=point;
-	theTriangulation->elem[theTriangulation->nElem].sommet1=PK;
-	theTriangulation->elem[theTriangulation->nElem].sommet2=edge->P1;
-	theTriangulation->elem[theTriangulation->nElem+1].indice=theTriangulation->nElem+1;
-	theTriangulation->elem[theTriangulation->nElem+1].sommet0=point;
-	theTriangulation->elem[theTriangulation->nElem+1].sommet1=edge->P0;
-	theTriangulation->elem[theTriangulation->nElem+1].sommet2=PK;
-	
-	 
-	// l'edge qui flip
-	theTriangulation->edges[edge->indice].P0=point;
-	theTriangulation->edges[edge->indice].P1=PK;
-	theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[edge->elem0->indice];// devrait être 
-	theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[edge->elem1->indice];// inutile
-		
-	// les edges des 2 nouveaux triangles 
-	theTriangulation->elem[theTriangulation->nElem].edge0= &theTriangulation->edges[edge->indice];// normalement on peut mettre ca
-	theTriangulation->elem[theTriangulation->nElem].edge1= edgeA;
-	theTriangulation->elem[theTriangulation->nElem].edge2= edgeB;
-	theTriangulation->elem[theTriangulation->nElem+1].edge0= edgeD;
-	theTriangulation->elem[theTriangulation->nElem+1].edge1= edgeC;
-	theTriangulation->elem[theTriangulation->nElem+1].edge2= &theTriangulation->edges[edge->indice];// avant "edge qui flip" ca change rien
-		
+	// TODO depend peut être du sens back=elem1 ou elem0...	
 	// mettre à jour les pointeurs edge->triangle pour les edges du bord qui bougent pas: ABCD
+	if (BackIs1 == 1)
+	{
 	if (edgeA->P0->indice == edge->P1->indice )// ici edge->P1 c'est PK car on a update
 	{
 		edgeA->elem0=&theTriangulation->elem[theTriangulation->nElem];	
@@ -659,7 +692,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	{
 		edgeA->elem1=&theTriangulation->elem[theTriangulation->nElem];		
 	}
-	
+	//////////////////////////////////////////
 	if (edgeC->P0->indice == edge->P1->indice)
 	{
 		edgeC->elem1=&theTriangulation->elem[theTriangulation->nElem+1];
@@ -668,8 +701,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	{
 		edgeC->elem0=&theTriangulation->elem[theTriangulation->nElem+1];
 	}
-	
-	
+	///////////////////////////////////////////
 	if (edgeB->P0->indice == edge->P0->indice)
 	{
 		edgeB->elem1=&theTriangulation->elem[theTriangulation->nElem];
@@ -678,6 +710,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	{
 		edgeB->elem0=&theTriangulation->elem[theTriangulation->nElem];
 	}
+	//////////////////////////////////////////
 	if (edgeD->P0->indice == edge->P0->indice)
 	{
 		edgeD->elem0=&theTriangulation->elem[theTriangulation->nElem+1];
@@ -686,7 +719,45 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	{
 		edgeD->elem1=&theTriangulation->elem[theTriangulation->nElem+1];
 	}
-	
+	}
+	else // back c'est "l'ancien edge->elem0": BackIs1==0
+	{// TODO
+	if (edgeA->P0->indice == edge->P1->indice )// ici edge->P1 c'est PK car on a update
+	{
+		edgeA->elem1=&theTriangulation->elem[theTriangulation->nElem];	
+	}
+	else
+	{
+		edgeA->elem0=&theTriangulation->elem[theTriangulation->nElem];		
+	}
+	///////////////////////////////////////////////
+	if (edgeC->P0->indice == edge->P1->indice)
+	{
+		edgeC->elem0=&theTriangulation->elem[theTriangulation->nElem+1];
+	}
+	else
+	{
+		edgeC->elem1=&theTriangulation->elem[theTriangulation->nElem+1];
+	}
+	///////////////////////////////////////////////
+	if (edgeB->P0->indice == edge->P0->indice)
+	{
+		edgeB->elem0=&theTriangulation->elem[theTriangulation->nElem];
+	}
+	else
+	{
+		edgeB->elem1=&theTriangulation->elem[theTriangulation->nElem];
+	}
+	//////////////////////////////////////////////
+	if (edgeD->P0->indice == edge->P0->indice)
+	{
+		edgeD->elem1=&theTriangulation->elem[theTriangulation->nElem+1];
+	}
+	else
+	{
+		edgeD->elem0=&theTriangulation->elem[theTriangulation->nElem+1];
+	}
+	}
 	theTriangulation->nElem=theTriangulation->nElem+2;// TODO chekc mais semble ok
 	// 2) on refait des LegalizeEdge 
 	LegalizeEdge(point, edgeA , theTriangulation);
@@ -901,7 +972,7 @@ void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
      for (i = 0; i < theTriangulation->nElem; i++) 
         {
             if(theTriangulation->elem[i].theLeaf->theChildren==NULL 
-             && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode 
+            /* && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode 
               && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode+1 
               && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode+2 
               && theTriangulation->elem[i].sommet1->indice!=theTriangulation->nNode
@@ -909,7 +980,7 @@ void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
               && theTriangulation->elem[i].sommet1->indice!=theTriangulation->nNode+2 
               && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode 
               && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+1 
-              && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+2)
+              && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+2*/)
             {fprintf(file,"%6d : %6f %6f %6f %6f %6f %6f \n", i,theTriangulation->elem[i].sommet0->x,
             					theTriangulation->elem[i].sommet1->x,
             					theTriangulation->elem[i].sommet2->x,

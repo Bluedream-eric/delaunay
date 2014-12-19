@@ -5,6 +5,9 @@ TODO:
 -) free le tree 
 -) legalize recursif ....
 
+BROKEN: c'est faux de supprimer tous les triangles qui touchent les 3 pints exterieurs. Il faut uniquement supprimer les 3 pts 
+		et les edges qui touchentles 3 pts. Les edges parmmis ces trig qui en touchent pas les 3 pts exterieurs ne peuvent pas
+		être enlevées
 
 ATTENTION: il y avait peut être des endroits où on faisait des test sur les deux nodes extérieurs, maintenant il y en a trois !!!!
 			en tout cas dans le isLegal: les 3 pts sont désormais en dehors de tout cercle :-)
@@ -14,4 +17,12 @@ LES LEAFS DANS LE FLIP :En fait c'est chaud car le triangle 026 n'est plus la mo
 	plusieurs leaf, et ça c'est pas possible pour l'instant :/
 	SOLUTION: Il faut que les child des deux triangles pointent vers l'unique mémoire de la leaf du petit triangle.  
 	
+
+Semble y avoir 2 bugs: 1) il se legalize lui même (devrait être ok mnt :D) 
+			 et 2) il foire le locate quand il a beaucoup flippé (problem avec les feuilles ? )
+GRILLE DE CARRES:
+RANDOM va pas, il legalize edge 9 à l'infini PROBLEM 1
+
+NON random: pour 1.0*Rayon il fait du crossing edge quand il legalize. Donc bug quelque part i guess:  2) il foire le locate quand il a beaucoup flippé (problem avec les feuilles ? )
+et pout 0.5 c'est crevé moche car il ne flip rien ...
 

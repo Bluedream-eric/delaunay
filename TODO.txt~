@@ -1,16 +1,12 @@
 TODO:
 
+-) Tester de trianguler des maillages qu'on avait reçu en éléments finis :-)
 -) 2 foncitons main pour séparer graphiques et calcul
--) compute random
--) free le tree 
--) legalize recursif ....
+-) free le tree : check ce que PA a fait
+-) il y a un prblm quand on fait random sur des carrés, il trouve pas de triangle ..
+-) complexité
+-)
 
-BROKEN: c'est faux de supprimer tous les triangles qui touchent les 3 pints exterieurs. Il faut uniquement supprimer les 3 pts 
-		et les edges qui touchentles 3 pts. Les edges parmmis ces trig qui en touchent pas les 3 pts exterieurs ne peuvent pas
-		être enlevées
-
-ATTENTION: il y avait peut être des endroits où on faisait des test sur les deux nodes extérieurs, maintenant il y en a trois !!!!
-			en tout cas dans le isLegal: les 3 pts sont désormais en dehors de tout cercle :-)
 
 LES LEAFS DANS LE FLIP :En fait c'est chaud car le triangle 026 n'est plus la mother des trois qu'on vient de créer et dont un a été détruit
 	semble ok à part que maintean tavec le double pointeur, il faut un double pointeur dans l'autre sens, un triangle devrait référencer 
@@ -23,6 +19,6 @@ Semble y avoir 2 bugs: 1) il se legalize lui même (devrait être ok mnt :D)
 GRILLE DE CARRES:
 RANDOM va pas, il legalize edge 9 à l'infini PROBLEM 1
 
-NON random: pour 1.0*Rayon il fait du crossing edge quand il legalize. Donc bug quelque part i guess
+NON random: pour 1.0*Rayon il fait du crossing edge quand il legalize. Donc bug quelque part i guess:  2) il foire le locate quand il a beaucoup flippé (problem avec les feuilles ? )
 et pout 0.5 c'est crevé moche car il ne flip rien ...
 

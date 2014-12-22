@@ -46,7 +46,7 @@ int indice;
 typedef struct myLeaf myLeaf;
 struct myLeaf{
 Triangle* theTriangle;
-myLeaf* theChildren;// tableau de Leaf
+myLeaf** theChildren;// tableau d'adresse de leaf
 int nChildren;
 };
 
@@ -78,6 +78,8 @@ void 		    TriangulationWritePlot(const char *PlotName,Triangulation *theTriangu
 void		    TriangulationWriteIter(const char *PlotName,Triangulation *theTriangulation, int iter);
 void                TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation);
 void                TriangulationFree(Triangulation *theTriangulation);
+void                freeTheTree(myLeaf* theLeaf);
+void                freeTheLeaves(Triangulation *theTriangulation);
 
 //void                findP0(Triangulation *theTriangulation);
 void                AddPoint(Point *point, Triangulation *theTriangulation,int i);

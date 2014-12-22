@@ -11,7 +11,9 @@ int triangulation(char *FileName, const char *ResultName, const char *PlotName);
 int main(void)
 {   
 		//test(42);
-		//char *FileName="data_new.txt";
+		//char *FileName="data_random100_000.txt";
+		//char *FileName="triangles_6315.txt";
+		//char *FileName="triangles_166.txt";
 		char *FileName="data_randomGrid.txt";
 		struct timespec start, finish;
 		double elapsed;

@@ -18,8 +18,8 @@ TriangulationWriteIter(PlotName,theTriangulation, 0);
 int i=0;
 for(i=0; i<theTriangulation->nNode; i++)
 {
-    AddPoint(&(theTriangulation->points[random[i]]), theTriangulation,i);// TODO remettre le random apres
-    //AddPoint(&(theTriangulation->points[i]), theTriangulation,i);
+   // AddPoint(&(theTriangulation->points[random[i]]), theTriangulation,i);// TODO remettre le random apres
+    AddPoint(&(theTriangulation->points[i]), theTriangulation,i);
     TriangulationWriteIter(PlotName,theTriangulation, i+1);
     //if(i==22)    break;
 }
@@ -398,7 +398,7 @@ int IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation
 	double Rayon =   (sqrt((Ax-Bx)*(Ax-Bx) + (Ay-By)*(Ay-By)))
 			*(sqrt((Ax-Cx)*(Ax-Cx) + (Ay-Cy)*(Ay-Cy)))
 			*(sqrt((Bx-Cx)*(Bx-Cx) + (By-Cy)*(By-Cy)))/(4*triArea(*(edge->P0),*(edge->P1),*point));
-	if (sqrt((centreX-(PK->x))*(centreX-(PK->x)) + (centreY-(PK->y))*(centreY-(PK->y))) >=0.9999999*Rayon)
+	if (sqrt((centreX-(PK->x))*(centreX-(PK->x)) + (centreY-(PK->y))*(centreY-(PK->y))) >=0.99999*Rayon)
 	{	
 		 return 1; // c'est legal
 	} 
@@ -451,7 +451,7 @@ int withinTriangle(Point *point,Triangle *triangle)
 {
 return ( fabs( triArea(*(triangle->sommet0),*(triangle->sommet1),*(triangle->sommet2)) - 
 ( triArea(*point,*(triangle->sommet0),*(triangle->sommet1)) + triArea(*point,*(triangle->sommet1),*(triangle->sommet2))
-+ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    )  <= 0.01 );// <= 0.0000001 );
++ triArea(*point,*(triangle->sommet0),*(triangle->sommet2))  )    ) <= 0.01 );// <= 0.0000001 );
 
 }
 
@@ -521,8 +521,10 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		{PK = edge->elem0->sommet1;}
 		else
 		{PK = edge->elem0->sommet2;}
-	}
-	else
+	}	
+	else if(edge->elem1->sommet0->indice != point->indice 
+		&& edge->elem1->sommet1->indice != point->indice 
+		&& edge->elem1->sommet2->indice != point->indice)
 	{// PK est dans triangle elem1
 		triBack = edge->elem1;
 		triFront = edge->elem0;
@@ -533,6 +535,38 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		else
 		{PK = edge->elem1->sommet2;}
 	}
+	else{
+	 printf(" edge->elem0->nChildren=%d\n",edge->elem0->theLeaf->nChildren);
+	 printf(" edge->elem1->nChildren=%d\n",edge->elem1->theLeaf->nChildren);
+	 printf(" ERROR: NO MATCHING FOR PK\n");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	if( IsLegal(point, edge,PK,theTriangulation)==0 ) 
 	{					
@@ -648,11 +682,9 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	// l'edge qui flip
 	theTriangulation->edges[edge->indice].P0=point;
 	theTriangulation->edges[edge->indice].P1=PK;
-	theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[theTriangulation->nElem];
-	theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[theTriangulation->nElem+1];
-	//theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[edge->elem0->indice];// SEMBLE FAUX !! 
-	//theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[edge->elem1->indice];// TODO check
-		
+	theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[theTriangulation->nElem+1];// ECHANGE le +1
+	theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[theTriangulation->nElem];// TODO check pcq on a
+			
 	// TODO leaf to check
 	triBack->theLeaf->nChildren=2;
 	triBack->theLeaf->theChildren=malloc(2*sizeof(myLeaf));
@@ -972,7 +1004,7 @@ void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
      for (i = 0; i < theTriangulation->nElem; i++) 
         {
             if(theTriangulation->elem[i].theLeaf->theChildren==NULL 
-            /* && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode 
+             && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode 
               && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode+1 
               && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode+2 
               && theTriangulation->elem[i].sommet1->indice!=theTriangulation->nNode
@@ -980,7 +1012,7 @@ void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
               && theTriangulation->elem[i].sommet1->indice!=theTriangulation->nNode+2 
               && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode 
               && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+1 
-              && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+2*/)
+              && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+2)
             {fprintf(file,"%6d : %6f %6f %6f %6f %6f %6f \n", i,theTriangulation->elem[i].sommet0->x,
             					theTriangulation->elem[i].sommet1->x,
             					theTriangulation->elem[i].sommet2->x,

@@ -11,17 +11,15 @@ int triangulation(char *FileName, const char *ResultName,const char *PlotName)
 {
 Triangulation *theTriangulation = TriangulationCreate(FileName);
 
-// TODO: ComputeRandom: un vecteur avec les nombres de 1 à n+1 mélangés pour voir dans quel ordre on ajoute les pts
-// ce vecteur s'appelle de random. 
 int *random = ComputeRandom(theTriangulation->nNode);
 TriangulationWriteIter(PlotName,theTriangulation, 0);
 int i=0;
 for(i=0; i<theTriangulation->nNode; i++)
 {
-    //AddPoint(&(theTriangulation->points[random[i]]), theTriangulation,i);// TODO remettre le random apres
-    AddPoint(&(theTriangulation->points[i]), theTriangulation,i);
+    AddPoint(&(theTriangulation->points[random[i]]), theTriangulation,i);
+    //AddPoint(&(theTriangulation->points[i]), theTriangulation,i);
     TriangulationWriteIter(PlotName,theTriangulation, i+1);
-    //if(i==22)    break;
+   //if(i==75)    break;
 }
 
 /*printf("edge 12: indice: %d \n",theTriangulation->edges[12].indice);
@@ -38,7 +36,9 @@ TriangulationWriteEnd(PlotName,theTriangulation);
 TriangulationWriteAll(ResultName, theTriangulation);
 
 TriangulationFree(theTriangulation); 
+free(random);
 return theTriangulation->nNode+1;
+//return 8;
 }
 /////////////////////////////////////////////////////////////////////////////////
 void AddPoint(Point *point, Triangulation *theTriangulation,int i)
@@ -49,16 +49,16 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	int nEdge=theTriangulation->nEdge;
 	int nElem=theTriangulation->nElem;
 
-	//printf("the root triangle indice : %d \n",theTriangulation->theTree->theRoot->theTriangle->indice);// TODO il y avait un prob 
-	printf(" ajout du point number %d en (%f,%f)\n",i,point->x,point->y);// grave de localisation sur le fichier test de base..
+	//printf(" ajout du point number %d en (%f,%f)\n",i,point->x,point->y);
 	PointLocate(point,theTriangulation,theTriangulation->theTree->theRoot); 
 	
 	if(theTriangulation->edgeGlobal == NULL)
 	{	 	
-	printf(" le point %d en (%f,%f) est dans le triangle de sommets (%f,%f),(%f,%f),(%f,%f) \n",i,point->x,point->y,
-			theTriangulation->trigGlobal->sommet0->x,theTriangulation->trigGlobal->sommet0->y,
-			theTriangulation->trigGlobal->sommet1->x,theTriangulation->trigGlobal->sommet1->y,
-			theTriangulation->trigGlobal->sommet2->x,theTriangulation->trigGlobal->sommet2->y);
+	
+	//printf(" le point %d en (%f,%f) est dans le triangle de sommets (%f,%f),(%f,%f),(%f,%f) \n",i,point->x,point->y,
+	//		theTriangulation->trigGlobal->sommet0->x,theTriangulation->trigGlobal->sommet0->y,
+	//		theTriangulation->trigGlobal->sommet1->x,theTriangulation->trigGlobal->sommet1->y,
+	//		theTriangulation->trigGlobal->sommet2->x,theTriangulation->trigGlobal->sommet2->y);
 	 	 
 	/* AJOUT DES 3 TRIANGLES */
 	
@@ -75,24 +75,27 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	theTriangulation->elem[nElem+2].sommet2=theTriangulation->trigGlobal->sommet0;
 	theTriangulation->elem[nElem+2].indice=nElem+2;
 	
-	theTriangulation->nElem=nElem+3;// check
+	theTriangulation->nElem=nElem+3;
 	theTriangulation->nElemReal=theTriangulation->nElemReal+2;
 	
 	/* FEUILLES */
 	theTriangulation->trigGlobal->theLeaf->nChildren=3;
-	theTriangulation->trigGlobal->theLeaf->theChildren=malloc(3*sizeof(myLeaf));
-	theTriangulation->trigGlobal->theLeaf->theChildren[0].theTriangle=&theTriangulation->elem[nElem];
-	theTriangulation->trigGlobal->theLeaf->theChildren[0].theChildren=NULL;
-	theTriangulation->trigGlobal->theLeaf->theChildren[0].nChildren=0;
-	theTriangulation->trigGlobal->theLeaf->theChildren[1].theTriangle=&theTriangulation->elem[nElem+1];
-	theTriangulation->trigGlobal->theLeaf->theChildren[1].theChildren=NULL;
-	theTriangulation->trigGlobal->theLeaf->theChildren[1].nChildren=0;
-	theTriangulation->trigGlobal->theLeaf->theChildren[2].theTriangle=&theTriangulation->elem[nElem+2];
-	theTriangulation->trigGlobal->theLeaf->theChildren[2].theChildren=NULL;
-	theTriangulation->trigGlobal->theLeaf->theChildren[2].nChildren=0;
-	theTriangulation->elem[nElem].theLeaf=&theTriangulation->trigGlobal->theLeaf->theChildren[0];
-	theTriangulation->elem[nElem+1].theLeaf=&theTriangulation->trigGlobal->theLeaf->theChildren[1];
-	theTriangulation->elem[nElem+2].theLeaf=&theTriangulation->trigGlobal->theLeaf->theChildren[2];
+	theTriangulation->trigGlobal->theLeaf->theChildren=malloc(3*sizeof(myLeaf*));
+	for( i=0; i<3; i++)
+	  theTriangulation->trigGlobal->theLeaf->theChildren[i]=malloc(sizeof(myLeaf));
+
+	theTriangulation->trigGlobal->theLeaf->theChildren[0]->theTriangle=&theTriangulation->elem[nElem];
+	theTriangulation->trigGlobal->theLeaf->theChildren[0]->theChildren=NULL;
+	theTriangulation->trigGlobal->theLeaf->theChildren[0]->nChildren=0;
+	theTriangulation->trigGlobal->theLeaf->theChildren[1]->theTriangle=&theTriangulation->elem[nElem+1];
+	theTriangulation->trigGlobal->theLeaf->theChildren[1]->theChildren=NULL;
+	theTriangulation->trigGlobal->theLeaf->theChildren[1]->nChildren=0;
+	theTriangulation->trigGlobal->theLeaf->theChildren[2]->theTriangle=&theTriangulation->elem[nElem+2];
+	theTriangulation->trigGlobal->theLeaf->theChildren[2]->theChildren=NULL;
+	theTriangulation->trigGlobal->theLeaf->theChildren[2]->nChildren=0;
+	theTriangulation->elem[nElem].theLeaf=theTriangulation->trigGlobal->theLeaf->theChildren[0];
+	theTriangulation->elem[nElem+1].theLeaf=theTriangulation->trigGlobal->theLeaf->theChildren[1];
+	theTriangulation->elem[nElem+2].theLeaf=theTriangulation->trigGlobal->theLeaf->theChildren[2];
 	
 	/* AJOUT DES EDGES */
 	theTriangulation->edges[nEdge].P0=point;
@@ -142,10 +145,10 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	
 	//// Pointeurs triangles->edges ///
 	theTriangulation->elem[nElem].edge0= &theTriangulation->edges[nEdge]; 
-	theTriangulation->elem[nElem].edge1= theTriangulation->trigGlobal->edge0;
+	theTriangulation->elem[nElem].edge1= theTriangulation->trigGlobal->edge0; 
 	theTriangulation->elem[nElem].edge2= &theTriangulation->edges[nEdge+1];
 	theTriangulation->elem[nElem+1].edge0= &theTriangulation->edges[nEdge+1];
-	theTriangulation->elem[nElem+1].edge1= theTriangulation->trigGlobal->edge1;
+	theTriangulation->elem[nElem+1].edge1= theTriangulation->trigGlobal->edge1; 
 	theTriangulation->elem[nElem+1].edge2= &theTriangulation->edges[nEdge+2];
 	theTriangulation->elem[nElem+2].edge0= &theTriangulation->edges[nEdge+2]; 
 	theTriangulation->elem[nElem+2].edge1= theTriangulation->trigGlobal->edge2;
@@ -154,27 +157,31 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	LegalizeEdge(point, theTriangulation->trigGlobal->edge0, theTriangulation);
 	LegalizeEdge(point, theTriangulation->trigGlobal->edge1, theTriangulation);
 	LegalizeEdge(point, theTriangulation->trigGlobal->edge2, theTriangulation); 
-	printf(" DONE SWITCHING\n");
+	//printf(" DONE SWITCHING\n");
 	/////////////////////////////////////////////////////////////////////
 	}
 	else if(theTriangulation->edgeGlobal != NULL)
 	{	
-	printf(" le point %d en (%f,%f) est sur l'edge de nodes (%f,%f),(%f,%f) \n",i,point->x,point->y,
-			theTriangulation->edgeGlobal->P0->x,theTriangulation->edgeGlobal->P0->y,
-			theTriangulation->edgeGlobal->P1->x,theTriangulation->edgeGlobal->P1->y);
+	//
+	//printf(" le point %d en (%f,%f) est sur l'edge de nodes (%f,%f),(%f,%f) \n",i,point->x,point->y,
+	//		theTriangulation->edgeGlobal->P0->x,theTriangulation->edgeGlobal->P0->y,
+	//		theTriangulation->edgeGlobal->P1->x,theTriangulation->edgeGlobal->P1->y);
 	//////////////////////////////// 1) triangle1 ///////////////////
 	Triangle *triangle1=theTriangulation->edgeGlobal->elem1;
 	
 	triangle1->theLeaf->nChildren=2;
-	triangle1->theLeaf->theChildren=malloc(2*sizeof(myLeaf));
-	triangle1->theLeaf->theChildren[0].theTriangle=&theTriangulation->elem[nElem];
-	triangle1->theLeaf->theChildren[0].theChildren=NULL;
-	triangle1->theLeaf->theChildren[0].nChildren=0;
-	triangle1->theLeaf->theChildren[1].theTriangle=&theTriangulation->elem[nElem+2];
-	triangle1->theLeaf->theChildren[1].theChildren=NULL;
-	triangle1->theLeaf->theChildren[1].nChildren=0;
-	theTriangulation->elem[nElem].theLeaf=&triangle1->theLeaf->theChildren[0];
-	theTriangulation->elem[nElem+2].theLeaf=&triangle1->theLeaf->theChildren[1];
+	triangle1->theLeaf->theChildren=malloc(2*sizeof(myLeaf*));
+	for( i=0; i<2; i++)
+	  triangle1->theLeaf->theChildren[i]=malloc(sizeof(myLeaf));
+
+	triangle1->theLeaf->theChildren[0]->theTriangle=&theTriangulation->elem[nElem];
+	triangle1->theLeaf->theChildren[0]->theChildren=NULL;
+	triangle1->theLeaf->theChildren[0]->nChildren=0;
+	triangle1->theLeaf->theChildren[1]->theTriangle=&theTriangulation->elem[nElem+2];
+	triangle1->theLeaf->theChildren[1]->theChildren=NULL;
+	triangle1->theLeaf->theChildren[1]->nChildren=0;
+	theTriangulation->elem[nElem].theLeaf=triangle1->theLeaf->theChildren[0];
+	theTriangulation->elem[nElem+2].theLeaf=triangle1->theLeaf->theChildren[1];
 	
 	
 	Edge *edgeA = triangle1->edge0;
@@ -220,7 +227,7 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	theTriangulation->elem[nElem].edge2= &theTriangulation->edges[nEdge];  
 	theTriangulation->elem[nElem+2].indice=nElem+2;
 	theTriangulation->elem[nElem+2].sommet0=point;
-	theTriangulation->elem[nElem+2].sommet2=theTriangulation->edgeGlobal->P1;
+	theTriangulation->elem[nElem+2].sommet2=theTriangulation->edgeGlobal->P1; 
 	theTriangulation->elem[nElem+2].sommet1=point_exterieur1;  	
 	theTriangulation->elem[nElem+2].edge2= &theTriangulation->edges[theTriangulation->edgeGlobal->indice];
 	theTriangulation->elem[nElem+2].edge1= edgeA;
@@ -257,15 +264,18 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	
 	
 	triangle0->theLeaf->nChildren=2;
-	triangle0->theLeaf->theChildren=malloc(2*sizeof(myLeaf));
-	triangle0->theLeaf->theChildren[0].theTriangle=&theTriangulation->elem[nElem+1];
-	triangle0->theLeaf->theChildren[0].theChildren=NULL;
-	triangle0->theLeaf->theChildren[0].nChildren=0;
-	triangle0->theLeaf->theChildren[1].theTriangle=&theTriangulation->elem[nElem+3];
-	triangle0->theLeaf->theChildren[1].theChildren=NULL;
-	triangle0->theLeaf->theChildren[1].nChildren=0;
-	theTriangulation->elem[nElem+1].theLeaf=&triangle0->theLeaf->theChildren[0];
-	theTriangulation->elem[nElem+3].theLeaf=&triangle0->theLeaf->theChildren[1];
+	triangle0->theLeaf->theChildren=malloc(2*sizeof(myLeaf*));
+	for( i=0; i<2; i++)
+	  triangle0->theLeaf->theChildren[i]=malloc(sizeof(myLeaf));
+
+	triangle0->theLeaf->theChildren[0]->theTriangle=&theTriangulation->elem[nElem+1];
+	triangle0->theLeaf->theChildren[0]->theChildren=NULL;
+	triangle0->theLeaf->theChildren[0]->nChildren=0;
+	triangle0->theLeaf->theChildren[1]->theTriangle=&theTriangulation->elem[nElem+3];
+	triangle0->theLeaf->theChildren[1]->theChildren=NULL;
+	triangle0->theLeaf->theChildren[1]->nChildren=0;
+	theTriangulation->elem[nElem+1].theLeaf=triangle0->theLeaf->theChildren[0];
+	theTriangulation->elem[nElem+3].theLeaf=triangle0->theLeaf->theChildren[1];
 		
 	Edge *edgeC=triangle0->edge0;
 	Edge *edgeD=triangle0->edge1;
@@ -277,7 +287,6 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	{
 		edgeD=triangle0->edge2;
 	}
-	//if (edgeC->indice != theTriangulation->edgeGlobal->P1->indice && edgeC->indice != theTriangulation->edgeGlobal->P1->indice)		// TODO on compare des indices de node et de edge :D <3 chekc que c'est ok mnt
 	if (edgeC->P0->indice != theTriangulation->edgeGlobal->P1->indice && edgeC->P1->indice != theTriangulation->edgeGlobal->P1->indice)
 	{
 	Edge *trashh = edgeC;
@@ -358,14 +367,14 @@ void AddPoint(Point *point, Triangulation *theTriangulation,int i)
 	theTriangulation->edges[theTriangulation->edgeGlobal->indice].elem1=&theTriangulation->elem[nElem+3];
 		
 	theTriangulation->nEdge=nEdge+3;
-	theTriangulation->nElem=nElem+4;// check
+	theTriangulation->nElem=nElem+4;
 	theTriangulation->nElemReal=theTriangulation->nElemReal+2;
 	////////////////////////////////////////////////////////////////////
 	LegalizeEdge(point,edgeA,theTriangulation);
 	LegalizeEdge(point,edgeB,theTriangulation);
 	LegalizeEdge(point,edgeC,theTriangulation);
 	LegalizeEdge(point,edgeD,theTriangulation);
-	printf(" DONE SWITCHING\n");
+	//printf(" DONE SWITCHING\n");
 }
 }
 
@@ -412,7 +421,6 @@ int IsLegal(Point *point, Edge *edge, Point *PK, Triangulation *theTriangulation
 
 void PointLocate(Point *point,Triangulation *theTriangulation,myLeaf *leaves)
 { 
-//printf("bool= %d \n ",leaves->theChildren != NULL);
 if (leaves->theChildren != NULL) // not the real leaves: check child by child
 {
 	int i = 0;
@@ -420,29 +428,18 @@ if (leaves->theChildren != NULL) // not the real leaves: check child by child
 	int ind=-1;
 	for(i=0;i< leaves->nChildren;i++ )
 	{
-		/*if (leaves->theChildren[i].theTriangle->indice ==3)
-		{
-			printf("il check le 3 \n");
-			printf(" 3->sommet0: %d \n",leaves->theChildren[i].theTriangle->sommet0->indice);
-			printf(" 3->sommet1: %d \n",leaves->theChildren[i].theTriangle->sommet1->indice);
-			printf(" 3->sommet2: %d \n",leaves->theChildren[i].theTriangle->sommet2->indice);
-		} */
 		
-		if(withinTriangle(point,leaves->theChildren[i].theTriangle))
-		{	
-			//printf("Le point %d est dans le fond du triangle %d\n",point->indice,leaves->theChildren[i].theTriangle->indice);
+		if(withinTriangle(point,leaves->theChildren[i]->theTriangle))
+		{       
 			ind=i;	
 			break;
 		}
 	}
 	if (ind==-1) printf(" ALERTE il n'est dans aucun triangle \n");
-	PointLocate(point,theTriangulation,&(leaves->theChildren[ind]));
-	//while (!(withinTriangle(point,leaves->theChildren[i].theTriangle)) && (i < leaves->nChildren))
-	//{i++;} // si tu regarde bien la condition elle fait d'office une seg fault quand i==nChildren :D	
+	PointLocate(point,theTriangulation,(leaves->theChildren[ind]));
 }
 else//theTriangulation->trigGlobal = leaves->theTriangle;
 {	
-	//printf("Le point %d est-il onside du triangle %d \n",point->indice,leaves->theTriangle->indice);
 	onSide(point,leaves->theTriangle,theTriangulation); 
 }
 }
@@ -498,8 +495,7 @@ void onSide(Point *point, Triangle *triangle,Triangulation *theTriangulation)
 ////////////////////////////////////////////////////////////////////////////////////////////
 void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 {
-	printf(" l'indice de l'edge a legalize est %d \n",edge->indice);
-	// les 3 edges du bord sont toujours legales :-)
+	//printf(" l'indice de l'edge a legalize est %d \n",edge->indice);
 	if(edge->indice==0 || edge->indice==1 || edge->indice==2)
 	{
 		return;	
@@ -509,10 +505,12 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	Point *PK=NULL;
 	Triangle *triBack=NULL;
 	Triangle *triFront=NULL;
+	int BackIs1=0;
 	if(edge->elem0->sommet0->indice != point->indice 
 		&& edge->elem0->sommet1->indice != point->indice 
 		&& edge->elem0->sommet2->indice != point->indice )
 	{// PK est dans le triangle elem0
+		BackIs1=0;
 		triBack = edge->elem0;
 		triFront = edge->elem1;
 		if(edge->elem0->sommet0->indice != edge->P0->indice && edge->elem0->sommet0->indice != edge->P1->indice )
@@ -522,8 +520,11 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		else
 		{PK = edge->elem0->sommet2;}
 	}
-	else
+	else if(edge->elem1->sommet0->indice != point->indice 
+		&& edge->elem1->sommet1->indice != point->indice 
+		&& edge->elem1->sommet2->indice != point->indice)
 	{// PK est dans triangle elem1
+		BackIs1=1;
 		triBack = edge->elem1;
 		triFront = edge->elem0;
 		if(edge->elem1->sommet0->indice != edge->P0->indice && edge->elem1->sommet0->indice != edge->P1->indice )
@@ -533,16 +534,23 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		else
 		{PK = edge->elem1->sommet2;}
 	}
+	else{
+	 printf(" edge->elem0->nChildren=%d\n",edge->elem0->theLeaf->nChildren);
+	 printf(" edge->elem1->nChildren=%d\n",edge->elem1->theLeaf->nChildren);
+	 printf(" ERROR: NO MATCHING FOR PK\n");
+	}
 	
 	if( IsLegal(point, edge,PK,theTriangulation)==0 ) 
 	{					
 	// 1) on switch
-	printf("SWITCH ON !! \n");
+	//printf("SWITCH ON !! \n");
+	
 	
 	// les edge A B C D
 	
 	Edge *edgeA=NULL;
 	Edge *edgeC=NULL;
+	
 	if (triBack->edge0->P0->indice != edge->P0->indice && triBack->edge0->P1->indice != edge->P0->indice)
 	{// triBack->edge0 c'est edgeA
 		edgeA=triBack->edge0;	
@@ -551,7 +559,6 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 			edgeC=triBack->edge1;
 		}
 		else{edgeC=triBack->edge2;}
-
 	}
 	else if (triBack->edge1->P0->indice != edge->P0->indice && triBack->edge1->P1->indice != edge->P0->indice)
 	{// triBack->edeg1 c'est edgeA
@@ -562,7 +569,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		}
 		else{edgeC = triBack->edge2;}	
 	}
-	else
+	else if (triBack->edge2->P0->indice != edge->P0->indice && triBack->edge2->P1->indice != edge->P0->indice)
 	{
 		edgeA=triBack->edge2;
 		if(triBack->edge0->P0->indice != edge->P1->indice && triBack->edge0->P1->indice != edge->P1->indice)
@@ -571,6 +578,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		}
 		else{edgeC=triBack->edge1;}
 	}
+	else printf(" ERROR: DID NOT FIND MATCHING EDGE FOR EDGE A\n");
 	
 	Edge *edgeB=NULL;
 	Edge *edgeD=NULL;
@@ -601,8 +609,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 			edgeD=triFront->edge0;
 		}
 		else{edgeD=triFront->edge1;}
-	}// TODO relire le chopage des edges ABCD: il existe 2 sens, peut poser un prblm par après ?
-	
+	}
 	
 	// les 2 nouveaux triangles
 	if (triBack->indice == edge->elem1->indice)
@@ -611,7 +618,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	theTriangulation->elem[theTriangulation->nElem].sommet0=point;
 	theTriangulation->elem[theTriangulation->nElem].sommet1=PK;
 	theTriangulation->elem[theTriangulation->nElem].sommet2=edge->P1;
-	theTriangulation->elem[theTriangulation->nElem].edge0= &theTriangulation->edges[edge->indice];// normalement on peut mettre ca
+	theTriangulation->elem[theTriangulation->nElem].edge0= &theTriangulation->edges[edge->indice];
 	theTriangulation->elem[theTriangulation->nElem].edge1= edgeA;
 	theTriangulation->elem[theTriangulation->nElem].edge2= edgeB;
 	theTriangulation->elem[theTriangulation->nElem+1].indice=theTriangulation->nElem+1;
@@ -620,7 +627,7 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	theTriangulation->elem[theTriangulation->nElem+1].sommet2=PK;
 	theTriangulation->elem[theTriangulation->nElem+1].edge0= edgeD;
 	theTriangulation->elem[theTriangulation->nElem+1].edge1= edgeC;
-	theTriangulation->elem[theTriangulation->nElem+1].edge2= &theTriangulation->edges[edge->indice];// avant "edge qui flip" ca change rien
+	theTriangulation->elem[theTriangulation->nElem+1].edge2= &theTriangulation->edges[edge->indice];
 	}
 	else if(triBack->indice == edge->elem0->indice)
 	{
@@ -639,48 +646,26 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	theTriangulation->elem[theTriangulation->nElem+1].edge1=edgeC;
 	theTriangulation->elem[theTriangulation->nElem+1].edge2=edgeD;
 	}
-	else printf("ERROR: NE DEVRAIT JAMAIS ETRE PRINTEEEEEEEEEEE \n");
-
-	int BackIs1;
-	if (triBack->indice == edge->elem1->indice) BackIs1=1;
-	else BackIs1=0;
+	else {
+	printf("ERROR: NE DEVRAIT JAMAIS ETRE PRINTE \n");
+	}
+	
 		
 	// l'edge qui flip
 	theTriangulation->edges[edge->indice].P0=point;
 	theTriangulation->edges[edge->indice].P1=PK;
+	if( BackIs1==1)
+	{
 	theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[theTriangulation->nElem];
 	theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[theTriangulation->nElem+1];
-	//theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[edge->elem0->indice];// SEMBLE FAUX !! 
-	//theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[edge->elem1->indice];// TODO check
-		
-	// TODO leaf to check
-	triBack->theLeaf->nChildren=2;
-	triBack->theLeaf->theChildren=malloc(2*sizeof(myLeaf));
-	triBack->theLeaf->theChildren[0].theTriangle=&theTriangulation->elem[theTriangulation->nElem];
-	triBack->theLeaf->theChildren[0].theChildren=NULL;
-	triBack->theLeaf->theChildren[0].nChildren=0;
-	triBack->theLeaf->theChildren[1].theTriangle=&theTriangulation->elem[theTriangulation->nElem+1];
-	triBack->theLeaf->theChildren[1].theChildren=NULL;
-	triBack->theLeaf->theChildren[1].nChildren=0;
-	theTriangulation->elem[theTriangulation->nElem].theLeaf=&triBack->theLeaf->theChildren[0]; 
-	theTriangulation->elem[theTriangulation->nElem+1].theLeaf=&triBack->theLeaf->theChildren[1];
-	////////////////////////////////////////////
-	triFront->theLeaf->nChildren=2;
-	triFront->theLeaf->theChildren=triBack->theLeaf->theChildren;// ? IDEE :-) faut être sur que ça modifie les deux mais normalementok
-	/*triFront->theLeaf->theChildren=malloc(2*sizeof(myLeaf));
-	triFront->theLeaf->theChildren[0].theTriangle=&theTriangulation->elem[theTriangulation->nElem];
-	triFront->theLeaf->theChildren[0].theChildren=NULL;
-	triFront->theLeaf->theChildren[0].nChildren=0;
-	triFront->theLeaf->theChildren[1].theTriangle=&theTriangulation->elem[theTriangulation->nElem+1];
-	triFront->theLeaf->theChildren[1].theChildren=NULL;
-	triFront->theLeaf->theChildren[1].nChildren=0;
-	theTriangulation->elem[theTriangulation->nElem].theLeaf=&triFront->theLeaf->theChildren[0];// TODO je ne sais plus trop pourquoi les triangles
-	theTriangulation->elem[theTriangulation->nElem+1].theLeaf=&triFront->theLeaf->theChildren[1];// on un pointeur sur leur feuille, il en faut 2 ??
-	// j'ai quand même le sentiment que cela risque de poser un problem si on fait un test sur le trig qui correpsond a l'autre 
-	//	feuille.. a voir ..
-	*/
+	}
+	else if( BackIs1==0)
+	{
+	theTriangulation->edges[edge->indice].elem0=&theTriangulation->elem[theTriangulation->nElem+1];
+	theTriangulation->edges[edge->indice].elem1=&theTriangulation->elem[theTriangulation->nElem];
+	}
+	else printf(" on est mort avant d'arriver ici \n");
 	
-	// TODO depend peut être du sens back=elem1 ou elem0...	
 	// mettre à jour les pointeurs edge->triangle pour les edges du bord qui bougent pas: ABCD
 	if (BackIs1 == 1)
 	{
@@ -688,10 +673,10 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 	{
 		edgeA->elem0=&theTriangulation->elem[theTriangulation->nElem];	
 	}
-	else
+	else if(edgeA->P1->indice == edge->P1->indice )
 	{
 		edgeA->elem1=&theTriangulation->elem[theTriangulation->nElem];		
-	}
+	}	
 	//////////////////////////////////////////
 	if (edgeC->P0->indice == edge->P1->indice)
 	{
@@ -720,8 +705,8 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		edgeD->elem1=&theTriangulation->elem[theTriangulation->nElem+1];
 	}
 	}
-	else // back c'est "l'ancien edge->elem0": BackIs1==0
-	{// TODO
+	else if(BackIs1==0) // triBack c'est "l'ancien edge->elem0": BackIs1==0
+	{
 	if (edgeA->P0->indice == edge->P1->indice )// ici edge->P1 c'est PK car on a update
 	{
 		edgeA->elem1=&theTriangulation->elem[theTriangulation->nElem];	
@@ -758,7 +743,31 @@ void LegalizeEdge(Point *point, Edge *edge, Triangulation *theTriangulation)
 		edgeD->elem0=&theTriangulation->elem[theTriangulation->nElem+1];
 	}
 	}
-	theTriangulation->nElem=theTriangulation->nElem+2;// TODO chekc mais semble ok
+	else{ printf("BackIs1 vaut rien, on est mort\n");}
+	
+
+	triBack->theLeaf->nChildren=2;
+	triBack->theLeaf->theChildren=malloc(2*sizeof(myLeaf*));
+	int j;
+	for( j=0; j<2; j++)
+	  triBack->theLeaf->theChildren[j]=malloc(sizeof(myLeaf));
+
+	triBack->theLeaf->theChildren[0]->theTriangle=&theTriangulation->elem[theTriangulation->nElem];
+	triBack->theLeaf->theChildren[0]->theChildren=NULL;
+	triBack->theLeaf->theChildren[0]->nChildren=0;
+	triBack->theLeaf->theChildren[1]->theTriangle=&theTriangulation->elem[theTriangulation->nElem+1];
+	triBack->theLeaf->theChildren[1]->theChildren=NULL;
+	triBack->theLeaf->theChildren[1]->nChildren=0;
+	theTriangulation->elem[theTriangulation->nElem].theLeaf=triBack->theLeaf->theChildren[0]; 
+	theTriangulation->elem[theTriangulation->nElem+1].theLeaf=triBack->theLeaf->theChildren[1];
+	////////////////////////////////////////////
+	triFront->theLeaf->nChildren=2;
+	triFront->theLeaf->theChildren=malloc(2*sizeof(myLeaf*));
+	for( j=0; j<2; j++)
+	    triFront->theLeaf->theChildren[j]=triBack->theLeaf->theChildren[j];
+
+	theTriangulation->nElem=theTriangulation->nElem+2;
+		
 	// 2) on refait des LegalizeEdge 
 	LegalizeEdge(point, edgeA , theTriangulation);
 	LegalizeEdge(point, edgeC , theTriangulation);
@@ -781,7 +790,6 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
   		trash = fscanf(file,"%d : %le %le \n",&theTriangulation->points[0].indice,
 					      &theTriangulation->points[0].x,
 					      &theTriangulation->points[0].y);  
-//    trash = fscanf(file,"%d : %f %f %f %f %f %f \n",&trashInd,&xLoc[0],&xLoc[1],&xLoc[2],&yLoc[0],&yLoc[1],&yLoc[2]);
         double maxX=theTriangulation->points[0].x;
         double minX=theTriangulation->points[0].x;
         double maxY=theTriangulation->points[0].y;
@@ -799,7 +807,6 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->nElem = 1;
     theTriangulation->nElemReal = 1;    // valeur au départ
     
-    //findP0(theTriangulation);
         
     theTriangulation->elem  = malloc(sizeof(Triangle)*(9*(nNode+3) +1));// TODO enlever le +3, devrait servir à rien..
     theTriangulation->edges = malloc(sizeof(Edge)*(3*(nNode+3) -3));
@@ -846,7 +853,7 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     theTriangulation->edges[2].elem0=&theTriangulation->elem[0];
     theTriangulation->edges[2].elem1=NULL;
     theTriangulation->edges[2].P0=&theTriangulation->points[nNode+2];
-    theTriangulation->edges[2].P1=&theTriangulation->points[nNode];  // FIN de anti-horlogique
+    theTriangulation->edges[2].P1=&theTriangulation->points[nNode];  
     								
     theTriangulation->nEdge=3;
     
@@ -865,34 +872,6 @@ Triangulation *theTriangulation = malloc(sizeof(Triangulation));
     return theTriangulation;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/*void findP0(Triangulation *theTriangulation)// va devenir inutile
-{
-
-//1) on cherche l'indice de P0
-int ind=0;
-int i;
-for(i=1;i<theTriangulation->nNode; i++)
-{
-	if(theTriangulation->points[i].y > theTriangulation->points[ind].y)
-	{
-		ind =i;
-	}
-	else if(theTriangulation->points[i].y == theTriangulation->points[ind].y && theTriangulation->points[i].x > theTriangulation->points[ind].x ){
-		ind = i;
-	}
-}
-
-// 2) switch pour mettre P0 devant :-)
-Point trash = theTriangulation->points[0]; 
-theTriangulation->points[0]=theTriangulation->points[ind];
-theTriangulation->points[ind]=trash;
-
-theTriangulation->points[0].indice=0;
-theTriangulation->points[ind].indice=ind;
-}*/
-
-////////////////////////////////////////////////////////////////////////////////////////////////
 int *ComputeRandom(int n)
 {// returns a vector of int values from 0 to n-1 in a random order
 int *tab= malloc(sizeof(int)*n);
@@ -918,13 +897,45 @@ return tab;
 
 void TriangulationFree(Triangulation *theTriangulation)
 {
-	// TODO PA: je te laisse free ton Tree ;-)
-    free(theTriangulation->edges);
-    free(theTriangulation->points);
-    free(theTriangulation->elem);
-    free(theTriangulation);
+
+  freeTheTree(theTriangulation->theTree->theRoot);
+  free(theTriangulation->theTree);
+  freeTheLeaves(theTriangulation);
+  free(theTriangulation->edges);
+  free(theTriangulation->points);
+  free(theTriangulation->elem);
+  free(theTriangulation);
 }
 
+
+void freeTheTree(myLeaf* theLeaf)
+{
+
+  if (theLeaf == NULL)
+    return;
+
+  int i;
+  for( i=0; i<theLeaf->nChildren; i++)
+      freeTheTree(theLeaf->theChildren[i]);
+ 
+
+ 
+  if(theLeaf->nChildren>0)
+    {
+      free(theLeaf->theChildren);
+      theLeaf->nChildren = 0;
+    }
+
+  
+}
+
+void freeTheLeaves(Triangulation *theTriangulation)
+{
+
+  int i;
+  for( i=0; i<theTriangulation->nElem; i++)
+      free(theTriangulation->elem[i].theLeaf);
+}
 
 
 void TriangulationWriteIter(const char *PlotName,Triangulation *theTriangulation, int iter)
@@ -962,7 +973,6 @@ void TriangulationWrite(const char *ResultName,Triangulation *theTriangulation)
 }
 
 
-
 void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
 {// n'ecrit que les triangles vivants dans le fichier, donc les morts ne sont aps sur le dessin opengl
      int i;
@@ -972,7 +982,7 @@ void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
      for (i = 0; i < theTriangulation->nElem; i++) 
         {
             if(theTriangulation->elem[i].theLeaf->theChildren==NULL 
-            /* && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode 
+             && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode 
               && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode+1 
               && theTriangulation->elem[i].sommet0->indice!=theTriangulation->nNode+2 
               && theTriangulation->elem[i].sommet1->indice!=theTriangulation->nNode
@@ -980,7 +990,7 @@ void TriangulationWriteEnd(const char *PlotName,Triangulation *theTriangulation)
               && theTriangulation->elem[i].sommet1->indice!=theTriangulation->nNode+2 
               && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode 
               && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+1 
-              && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+2*/)
+              && theTriangulation->elem[i].sommet2->indice!=theTriangulation->nNode+2)
             {fprintf(file,"%6d : %6f %6f %6f %6f %6f %6f \n", i,theTriangulation->elem[i].sommet0->x,
             					theTriangulation->elem[i].sommet1->x,
             					theTriangulation->elem[i].sommet2->x,
@@ -1038,37 +1048,4 @@ void TriangulationWriteAll(const char *ResultName,Triangulation *theTriangulatio
 }
   
   
-  /*
-void femEdgesPrint(femEdges *theEdges)
-{
-    int i;    
-    for (i = 0; i < theEdges->nEdge; ++i) {
-        printf("%6d : %4d %4d : %4d %4d \n",i,
-               theEdges->edges[i].node[0],theEdges->edges[i].node[1],
-               theEdges->edges[i].elem[0],theEdges->edges[i].elem[1]); }
-}
-
-*/
-
-
-
-
-/*
-void Error(char *text, int line, char *file)                                  
-{ 
-    printf("\n-------------------------------------------------------------------------------- ");
-    printf("\n  Error in %s at line %d : \n  %s\n", file, line, text);
-    printf("--------------------------------------------------------------------- Yek Yek !! \n\n");
-    exit(69);                                                 
-}
-
-void femWarning(char *text, int line, char *file)                                  
-{ 
-    printf("\n-------------------------------------------------------------------------------- ");
-    printf("\n  Warning in %s at line %d : \n  %s\n", file, line, text);
-    printf("--------------------------------------------------------------------- Yek Yek !! \n\n");                                              
-}
-
-*/
-
 

@@ -12,7 +12,8 @@ int main(void)
 {   
 		//test(42);
 		//char *FileName="data_new.txt";
-		char *FileName="data_random3.txt";
+		//char *FileName="data_randomGrid.txt";
+		char *FileName="triangles_166.txt";
 		struct timespec start, finish;
 		double elapsed;
 		char *ResultName="solution.txt";
@@ -25,7 +26,7 @@ int main(void)
 		#ifdef GRAPHICS 
 		
 		glfemInit("Delaunay");
-    		clock_gettime(CLOCK_MONOTONIC, &start);
+    		/*clock_gettime(CLOCK_MONOTONIC, &start);
     		do
     		{ 
     		clock_gettime(CLOCK_MONOTONIC, &finish);
@@ -43,7 +44,7 @@ int w,h;
     		iter++;
     		}
     	while( glfwGetKey(GLFW_KEY_ESC) != GLFW_PRESS &&
-   		        glfwGetWindowParam(GLFW_OPENED) && elapsed <=nPrint-2);
+   		        glfwGetWindowParam(GLFW_OPENED) && elapsed <=nPrint-2);*/
     do
     {
         int w,h;
